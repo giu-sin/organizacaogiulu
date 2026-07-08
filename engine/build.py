@@ -14,7 +14,7 @@ for p in glob.glob(os.path.join(BASE, "csv", "*.csv")):
 
 tpl = open(os.path.join(BASE, "dashboard_template.html"), encoding="utf-8").read()
 stub = ("<script>\nwindow.__RAW_BY_ID=" + json.dumps(raw_by_id, ensure_ascii=False) +
-        ";\nwindow.cowork={callMcpTool:async function(t,a){return {content:[{text:\"<file_content_x>\\n\"+(window.__RAW_BY_ID[a.file_id]||\"\")+\"\\n</file_content_x>\"}]};}};\n</script>\n")
+        ";\nwindow.cowork={callMcpTool:async function(t,a){return {content:[{text:\"<file_content_aa>\\n\"+(window.__RAW_BY_ID[a.file_id]||\"\")+\"\\n</file_content_aa>\"}]};}};\n</script>\n")
 inner = tpl.replace("<body>", "<body>\n" + stub, 1)
 inner = inner.replace("botão <b>Recarregar</b> no topo puxa de novo", "atualizado automaticamente às 11h")
 
