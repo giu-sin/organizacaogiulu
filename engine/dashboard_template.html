@@ -117,6 +117,13 @@ a.lk:hover{ text-decoration:underline; }
 .err{ background:var(--redbg); color:#ff8b9c; border:1px solid rgba(245,56,93,.3); border-radius:12px; padding:11px 15px; margin-bottom:14px; font-size:12.5px; }
 .spin{ display:inline-block; width:15px; height:15px; border:2px solid var(--line2); border-top-color:var(--brand); border-radius:50%; animation:sp .8s linear infinite; vertical-align:-3px; }
 @keyframes sp{ to{ transform:rotate(360deg); } }
+.alertbox{ background:rgba(251,209,78,.05); border:1px solid rgba(251,209,78,.28); border-left:3px solid var(--yellow); border-radius:16px; padding:15px 18px; margin-bottom:18px; }
+.alertbox h2{ font-size:12px; font-weight:600; margin:0 0 12px; color:var(--yellow); text-transform:uppercase; letter-spacing:.07em; }
+.alertbox .aitem{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+.alertbox .aitem:last-of-type{ border-bottom:0; }
+.alertbox .at{ font-weight:600; color:var(--ink); font-size:13px; }
+.alertbox .ameta{ margin-left:auto; color:var(--ink3); font-size:11.5px; white-space:nowrap; }
+.alertbox .amore{ font-size:11.5px; color:var(--ink3); margin-top:11px; }
 .legend{ font-size:11px; color:var(--ink3); margin:6px 2px 16px; display:flex; gap:18px; flex-wrap:wrap; }
 .legend span{ display:inline-flex; align-items:center; gap:5px; }
 </style>
@@ -240,7 +247,7 @@ async function loadOne(f){
     const tarefa=g(ci.tarefa); if(!tarefa) continue;
     const destRaw=g(ci.dest); const dests=destRaw?destRaw.split(/[;,]/).map(s=>s.trim()).filter(Boolean):[];
     let link=""; const lraw=g(ci.links); if(lraw){ const clean=lraw.replace(/\\\//g,"/"); const mm=clean.match(/https?:\/\/[^"'\\ ]+/); if(mm)link=mm[0]; }
-    out.push({ hub:f.hub, tarefa, status:g(ci.status), prio:g(ci.prio), desc:g(ci.desc), atend:g(ci.atend), atendNome:nameOf(g(ci.atend)), dests, destNomes:dests.map(nameOf), entrada:g(ci.entrada), prazo:g(ci.prazo), concl:(low(g(ci.concl))==="true"||/(conclu|enviad|atend)/.test(low(g(ci.status)))), link, obs:g(ci.obs) });
+    out.push({ hub:f.hub, tarefa, status:g(ci.status), prio:g(ci.prio), desc:g(ci.desc), atend:g(ci.atend), atendNome:nameOf(g(ci.atend)), dests, destNomes:dests.map(nameOf), entrada:g(ci.entrada), prazo:g(ci.prazo), concl:(low(g(ci.concl))==="true"||/(conclu|enviad|atend|aprov)/.test(low(g(ci.status)))), link, obs:g(ci.obs) });
   }
   return out;
 }
@@ -344,12 +351,18 @@ function render(){
 
 
   const content=document.getElementById("content");
-  if(!shown.length){ content.innerHTML='<div class="empty">Nada por aqui com os filtros atuais. 🎉</div>'; drawCharts([],[]); return; }
+  const noOwner=TASKS.filter(t=>activeHubs.has(t.hub)&&!t.concl&&!t.destNomes.length);
+  let alertHtml="";
+  if(noOwner.length){
+    const items=noOwner.slice().sort(sortTasks).map(t=>{ const dm=daysMeta(daysLeft(t.prazo)); const lk=t.link?' <a class="lk" href="'+t.link+'" target="_blank" rel="noopener">abrir \u2197</a>':''; const dl=t.prazo?'<span class="'+dm.cls+'" style="font-weight:600">'+dm.txt+'</span>':'sem prazo'; return '<div class="aitem"><span class="hubchip" style="background:'+HUB_COLOR[t.hub]+'22;color:'+HUB_COLOR[t.hub]+'">'+esc(t.hub)+'</span><span class="at">'+esc(t.tarefa)+'</span>'+lk+'<span class="ameta">'+dl+' \u00b7 '+esc(t.status||'\u2014')+'</span></div>'; }).join("");
+    alertHtml='<div class="alertbox"><h2>Jobs sem dono \u2014 '+noOwner.length+'</h2>'+items+'<div class="amore">Defina um respons\u00e1vel de planejamento na Slack List para tirar do alerta.</div></div>';
+  }
+  if(!shown.length){ content.innerHTML=alertHtml||'<div class="empty">Nada por aqui com os filtros atuais.</div>'; drawCharts([],[]); return; }
 
   let html=""; let peopleData=[];
   if(view==="planej"){
     const groups={};
-    shown.forEach(t=>{ const keys=t.destNomes.length?t.destNomes:["— sem planejamento —"]; keys.forEach(k=>{(groups[k]=groups[k]||[]).push(t);}); });
+    shown.forEach(t=>{ if(!t.destNomes.length)return; t.destNomes.forEach(k=>{(groups[k]=groups[k]||[]).push(t);}); });
     const names=Object.keys(groups).sort((a,b)=>{ const la=groups[a].filter(t=>{const d=daysLeft(t.prazo);return !t.concl&&d!==null&&d<0;}).length; const lb=groups[b].filter(t=>{const d=daysLeft(t.prazo);return !t.concl&&d!==null&&d<0;}).length; if(lb!==la)return lb-la; return groups[b].filter(t=>!t.concl).length-groups[a].filter(t=>!t.concl).length; });
     names.forEach(n=> html+=personCard(n, "planejamento", groups[n], { showHub:true, col2:null, avatar:true }));
     peopleData=names.map(n=>{ const o=groups[n].filter(t=>!t.concl); const l=o.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length; return {label:n, late:l, rest:o.length-l}; });
@@ -366,21 +379,21 @@ function render(){
     const openShown=shown.filter(t=>!t.concl);
     defs.forEach(b=>{ const g=openShown.filter(b.test); if(!g.length)return; html+=personCard(b.label,"", g, { showHub:true, col2:"dest", avatar:false, hubColor:"var(--brand)" }); });
     if(!html) html='<div class="empty">Nada com prazo nos filtros atuais.</div>';
-    peopleData=FILES.filter(f=>activeHubs.has(f.hub)).map(f=>{ const o=shown.filter(t=>t.hub===f.hub&&!t.concl); const l=o.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length; return {label:f.hub, late:l, rest:o.length-l}; }).filter(d=>d.late+d.rest>0);
+    peopleData=FILES.filter(f=>activeHubs.has(f.hub)).map(f=>{ const o=shown.filter(t=>t.hub===f.hub&&!t.concl&&t.destNomes.length); const l=o.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length; return {label:f.hub, late:l, rest:o.length-l}; }).filter(d=>d.late+d.rest>0);
     document.getElementById("chart-title").textContent="Carga por time";
   } else {
-    FILES.forEach(f=>{ if(!activeHubs.has(f.hub))return; const g=shown.filter(t=>t.hub===f.hub); if(!g.length)return;
+    FILES.forEach(f=>{ if(!activeHubs.has(f.hub))return; const g=shown.filter(t=>t.hub===f.hub&&t.destNomes.length); if(!g.length)return;
       const og=g.filter(t=>!t.concl); const lt=og.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length; const td=og.filter(t=>daysLeft(t.prazo)===0).length; const sn=og.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d>0&&d<=3;}).length;
       let bdg='<span class="badge b-open">'+og.length+'</span>'; if(lt)bdg+='<span class="badge b-late">'+lt+' atras.</span>'; if(td)bdg+='<span class="badge b-today">'+td+' hoje</span>';
       html+='<div class="hubsec-h"><span class="hubdot" style="background:'+HUB_COLOR[f.hub]+'"></span><span class="hubname">'+esc(f.hub)+'</span>'+loadbar(og.length,lt,td,sn)+'<span class="cnt">'+bdg+'</span></div>';
-      const byP={}; g.forEach(t=>{ const keys=t.destNomes.length?t.destNomes:["\u2014 sem planejamento \u2014"]; keys.forEach(k=>(byP[k]=byP[k]||[]).push(t)); });
+      const byP={}; g.forEach(t=>{ t.destNomes.forEach(k=>(byP[k]=byP[k]||[]).push(t)); });
       const pn=Object.keys(byP).sort((a,b)=>{ const la=byP[a].filter(t=>{const d=daysLeft(t.prazo);return !t.concl&&d!==null&&d<0;}).length; const lb=byP[b].filter(t=>{const d=daysLeft(t.prazo);return !t.concl&&d!==null&&d<0;}).length; if(lb!==la)return lb-la; return byP[b].filter(t=>!t.concl).length-byP[a].filter(t=>!t.concl).length; });
       html+='<div class="hubsub">'; pn.forEach(n=> html+=personCard(n,"", byP[n], { showHub:false, col2:null, avatar:true })); html+='</div>';
     });
-    peopleData=FILES.filter(f=>activeHubs.has(f.hub)).map(f=>{ const o=shown.filter(t=>t.hub===f.hub&&!t.concl); const l=o.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length; return {label:f.hub, late:l, rest:o.length-l}; }).filter(d=>d.late+d.rest>0);
+    peopleData=FILES.filter(f=>activeHubs.has(f.hub)).map(f=>{ const o=shown.filter(t=>t.hub===f.hub&&!t.concl&&t.destNomes.length); const l=o.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length; return {label:f.hub, late:l, rest:o.length-l}; }).filter(d=>d.late+d.rest>0);
     document.getElementById("chart-title").textContent="Carga por time";
   }
-  content.innerHTML=html;
+  content.innerHTML=alertHtml+html;
   const hubData=FILES.filter(f=>activeHubs.has(f.hub)).map(f=>({label:f.hub,value:TASKS.filter(t=>t.hub===f.hub&&!t.concl).length,color:f.color})).filter(d=>d.value>0);
   drawCharts(peopleData,hubData);
 }
