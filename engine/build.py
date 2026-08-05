@@ -79,7 +79,8 @@ ORG=[
  {"lvl":"Especialista","people":[
    {"n":"Matheus Gomes","u":"matheus.gomes","t":"Especialista de Planejamento","hub":"Boticário · QDB · Vult · Licenciadas","hubs":["Boti/Vult/Licenciados"]},
    {"n":"Cauã Sampaio","u":"caua","t":"Especialista de Planejamento","hub":"Bens de Consumo","hubs":["Bens de Consumo"]},
-   {"n":"Gabô","u":"gabriela.barbosa","t":"Especialista em Planejamento & Influência II","hub":"Novos Negócios","hubs":["Novos Negócios"]}]},
+   {"n":"Gabô","u":"gabriela.barbosa","t":"Especialista em Planejamento & Influência II","hub":"Novos Negócios","hubs":["Novos Negócios"]},
+   {"n":"Luiza Moraes","u":"luiza.moraes","t":"Especialista de Planejamento GEO","hub":"GEO · Samsung e Fiat","hubs":["GEO"]}]},
  {"lvl":"Analista","people":[
    {"n":"Olivia Villani","u":"olivia","t":"Analista de Planejamento","hub":"Eudora","hubs":["Eudora"]},
    {"n":"Alana Barros","u":"alana.barros","t":"Analista de Curadoria Jr.","hub":"Boticário · QDB · Vult · Licenciadas","hubs":["Boti/Vult/Licenciados"]},
@@ -146,7 +147,7 @@ document.open();document.write(new TextDecoder().decode(pt));document.close();
 print("build.py carregado — TASKS:", len(TASKS))
 
 # ================= HTML SHARED =================
-NAV_LINKS=[("index.html","Início"),("pautas.html","Pautas"),("organograma.html","Organograma"),("publigif.html","PubliGIF"),("estimativas.html","Estimativas"),("mapeamento.html","Mapeamento"),("ugc.html","UGC")]
+NAV_LINKS=[("index.html","Início"),("pautas.html","Pautas"),("organograma.html","Organograma"),("marcas.html","Marcas"),("publigif.html","PubliGIF"),("estimativas.html","Estimativas"),("mapeamento.html","Mapeamento"),("ugc.html","UGC")]
 def nav(active):
     items="".join(f'<a href="{h}" class="{ "on" if h==active else "" }">{esc(l)}</a>' for h,l in NAV_LINKS)
     return f'<div class="nav"><a class="brand" href="index.html">PUBLI<i>NATION</i></a><span class="sp"></span>{items}</div>'
