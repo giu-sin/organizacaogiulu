@@ -230,13 +230,19 @@ def build_organograma():
         for p in l["people"]: p["_lvl"]=l["lvl"]
         cards="".join(person_card(p) for p in l["people"])
         lvls_html+=f'<div class="lvl"><div class="lvltag">{esc(l["lvl"])}</div><div class="row">{cards}</div></div>'
+    ORGHUBS=[("Beleza","#A66BFF","Boticário · QDB · Vult · Licenciadas · Eudora"),
+             ("Bens de Consumo","#3DA5FF",""),
+             ("Novos Negócios","#1FD6A6",""),
+             ("GEO","#FF8A3D","Samsung · Fiat")]
+    PAUTA2HUB={"Boti/Vult/Licenciados":"Beleza","Eudora":"Beleza","Bens de Consumo":"Bens de Consumo","Novos Negócios":"Novos Negócios","GEO":"GEO"}
+    def orghubs_of(p): return {PAUTA2HUB.get(h,h) for h in p.get("hubs",[])}
     times=""
-    for hub in HUBCOLOR:
-        ppl=[p for l in ORG for p in l["people"] if hub in p.get("hubs",[])]
+    for name,col,subt in ORGHUBS:
+        ppl=[p for l in ORG for p in l["people"] if name in orghubs_of(p)]
         lis="".join(f'<div class="member"><span class="mn">{esc(p["n"])}</span><span class="mt">{esc(p["t"])}</span></div>' for p in ppl) or '<div class="member"><span class="mt">\u2014</span></div>'
-        col=HUBCOLOR[hub]
-        times+=(f'<div class="tcard" style="border-top-color:{col}"><div class="tname">{esc(hub)}</div>'
-                f'<div class="mcount">{len(ppl)} pessoa(s)</div>{lis}</div>')
+        sub=f'{len(ppl)} pessoa(s)'+(f' · {subt}' if subt else '')
+        times+=(f'<div class="tcard" style="border-top-color:{col}"><div class="tname">{esc(name)}</div>'
+                f'<div class="mcount">{esc(sub)}</div>{lis}</div>')
     body=f'''<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Organograma \u00b7 Planejamento Publination</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -247,7 +253,7 @@ def build_organograma():
 <div class="sub">Quem trabalha com o qu\u00ea \u00b7 estrutura do time de planejamento</div>
 <div class="kpis">
 <div class="kpi"><div class="n">{total_people}</div><div class="l">Pessoas no time</div></div>
-<div class="kpi"><div class="n">5</div><div class="l">Hubs / frentes</div></div>
+<div class="kpi"><div class="n">4</div><div class="l">Hubs</div></div>
 <div class="kpi"><div class="n">7</div><div class="l">N\u00edveis</div></div>
 </div>
 {lvls_html}
