@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publination — Estimativa de UGC</title>
+<style>
+  :root{--cream:#FBF3CD;--black:#161514;--card:#fffdf2;--border:#16151422;--muted:#6b675a;--pill:#16151410;--good:#1d7a4f}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+  body{background:var(--cream);color:var(--black);padding:20px;font-size:14.5px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .topnav{display:flex;align-items:center;gap:14px;padding:10px 20px;margin:-20px -20px 18px;background:var(--black);flex-wrap:wrap}
+  .topnav .brand{font-size:19px;letter-spacing:-.5px;text-decoration:none;color:var(--cream)}
+  .topnav .brand b{font-weight:900}.topnav .brand i{font-weight:600;font-style:italic}
+  .topnav .sp{flex:1}
+  .topnav a.lnk{text-decoration:none;color:var(--cream);font-weight:800;font-size:13px;padding:7px 14px;border-radius:30px;opacity:.75}
+  .topnav a.lnk:hover{opacity:1;background:#fbf3cd22}
+  .topnav a.lnk.active{background:var(--cream);color:var(--black);opacity:1}
+  .logo{font-size:34px;letter-spacing:-1px}.logo b{font-weight:900}.logo i{font-weight:600;font-style:italic}
+  .sub{color:var(--muted);margin-bottom:18px;font-size:14px;max-width:760px;line-height:1.5}
+  .card{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:16px 18px;margin-bottom:16px;box-shadow:3px 3px 0 var(--black)}
+  .card h3{font-size:14px;font-weight:900;margin-bottom:4px}
+  .card .hint{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+  label{display:block;font-size:11.5px;font-weight:700;margin-bottom:3px}
+  input{background:#fff;border:1.5px solid var(--border);border-radius:8px;color:var(--black);padding:7px 9px;font-size:13px;width:100%}
+  input:focus{outline:none;border-color:var(--black)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .gridscope{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:560px}
+  button{background:var(--black);color:var(--cream);border:none;border-radius:30px;padding:10px 18px;font-size:13.5px;font-weight:800;cursor:pointer}
+  button.ghost{background:transparent;color:var(--black);border:2px solid var(--black)}
+  button.danger{background:transparent;color:#b3261e;border:none;font-weight:700;padding:4px 8px;font-size:13px}
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  table.tiers th,table.tiers td{padding:5px 6px;text-align:left}
+  table.tiers thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted)}
+  table.tiers td input{padding:6px 7px}
+  .scn-row{display:flex;gap:10px;align-items:end;margin-bottom:8px;flex-wrap:wrap}
+  .scn-row .f{flex:0 0 auto}
+  .scn-row .f.name input{min-width:160px}
+  .scn-row .f.qty input{width:120px}
+  details.adv{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:12px 18px;margin-bottom:16px}
+  details.adv summary{cursor:pointer;font-weight:800;font-size:13.5px}
+  .note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .results{background:var(--black);color:var(--cream);border-radius:18px;padding:22px;box-shadow:4px 4px 0 #16151455;overflow-x:auto}
+  .results h2{font-size:17px;font-weight:900;margin-bottom:12px}
+  .results table{font-size:13px}
+  .results th,.results td{border:1px solid #fbf3cd33;padding:8px 12px;text-align:left;white-space:nowrap}
+  .results thead th{font-size:12px;background:#fbf3cd14}
+  .results td.metric{font-weight:800;background:#fbf3cd10}
+  .results td.big{font-weight:900;font-size:15px}
+  .results .read{background:#fbf3cd1c;border:1px dashed #fbf3cd55;border-radius:10px;padding:12px 15px;margin-top:14px;font-size:13.5px;line-height:1.55}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--good);color:#fff;padding:12px 22px;border-radius:30px;font-weight:800;box-shadow:3px 3px 0 #16151455;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+  .warn{color:#b3261e;font-weight:700;font-size:12px;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a class="brand" href="index.html"><b>PUBLI</b><i>NATION</i></a>
+  <span class="sp"></span>
+  <a class="lnk" href="estimativas.html">📊 Estimativas</a>
+  <a class="lnk" href="mapeamento.html">🗺️ Mapeamento</a>
+  <a class="lnk active" href="ugc.html">👥 UGC</a>
+</div>
+<div class="wrap">
+  <div class="logo"><b>PUBLI</b><i>NATION</i></div>
+  <p class="sub">Estimativa de <b>UGC em massa</b> ✨ Pra quando você ainda não filtrou os perfis. Diz quantos UGCs, a faixa de tamanho e o escopo — calculo os impactos por cenário usando taxas de alcance de mercado.</p>
+
+  <div class="card">
+    <h3>1. Escopo por perfil</h3>
+    <div class="hint">O que cada criador entrega. (Seu caso: 3 TikToks com repost no Reels + 9 telas de Stories.)</div>
+    <div class="gridscope">
+      <div><label>TikToks por perfil</label><input id="sc_tt" type="number" value="3" oninput="recalc()"></div>
+      <div><label>Reels (repost) por perfil</label><input id="sc_reel" type="number" value="3" oninput="recalc()"></div>
+      <div><label>Telas de Stories por perfil</label><input id="sc_telas" type="number" value="9" oninput="recalc()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2. Perfil do pool (faixas de tamanho)</h3>
+    <div class="hint">Como o pool de UGCs se distribui. Os % devem somar 100. "Seguidores médios" = tamanho típico de cada faixa.</div>
+    <table class="tiers">
+      <thead><tr><th>Faixa</th><th>% do pool</th><th>Seguidores médios</th></tr></thead>
+      <tbody>
+        <tr><td>Nano (1–10k)</td><td><input id="pct_nano" type="number" value="60" oninput="recalc()"></td><td><input id="foll_nano" type="number" value="5000" oninput="recalc()"></td></tr>
+        <tr><td>Micro (10–50k)</td><td><input id="pct_micro" type="number" value="30" oninput="recalc()"></td><td><input id="foll_micro" type="number" value="25000" oninput="recalc()"></td></tr>
+        <tr><td>50k+</td><td><input id="pct_mid" type="number" value="10" oninput="recalc()"></td><td><input id="foll_mid" type="number" value="70000" oninput="recalc()"></td></tr>
+      </tbody>
+    </table>
+    <div id="pctWarn" class="warn" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <h3>3. Cenários</h3>
+    <div class="hint">Quantos UGCs em cada cenário. (Ex: Cenário A = 200, Cenário B = 280.)</div>
+    <div id="scnList"></div>
+    <button class="ghost" onclick="addScn()">+ Adicionar cenário</button>
+  </div>
+
+  <details class="adv">
+    <summary>⚙ Taxas de alcance de mercado (só mexer se souber 😉)</summary>
+    <table class="tiers" style="margin-top:12px">
+      <thead><tr><th>Faixa</th><th>TikTok views/vídeo (% seg.)</th><th>Reels alcance/reel (% seg.)</th><th>Stories alcance/tela (% seg.)</th></tr></thead>
+      <tbody>
+        <tr><td>Nano</td><td><input id="tt_nano" type="number" value="25" oninput="recalc()"></td><td><input id="reel_nano" type="number" value="35" oninput="recalc()"></td><td><input id="st_nano" type="number" value="6.5" step="0.1" oninput="recalc()"></td></tr>
+        <tr><td>Micro</td><td><input id="tt_micro" type="number" value="18" oninput="recalc()"></td><td><input id="reel_micro" type="number" value="28" oninput="recalc()"></td><td><input id="st_micro" type="number" value="2.6" step="0.1" oninput="recalc()"></td></tr>
+        <tr><td>50k+</td><td><input id="tt_mid" type="number" value="12" oninput="recalc()"></td><td><input id="reel_mid" type="number" value="20" oninput="recalc()"></td><td><input id="st_mid" type="number" value="1.6" step="0.1" oninput="recalc()"></td></tr>
+      </tbody>
+    </table>
+    <div class="grid3" style="max-width:420px;margin-top:12px">
+      <div><label>Fator conservador</label><input id="m_cons" type="number" value="0.7" step="0.1" oninput="recalc()"></div>
+      <div><label>Fator base</label><input id="m_base" type="number" value="1" step="0.1" oninput="recalc()"></div>
+      <div><label>Fator otimista</label><input id="m_otim" type="number" value="1.4" step="0.1" oninput="recalc()"></div>
+    </div>
+    <p class="note">Taxas-base em benchmarks: TikTok ~10–20% dos seguidores em views/vídeo (RivalIQ/Shortimize); Reels alcance médio ~30% (Statista/Metricool); Stories por faixa (RivalIQ). O fator multiplica só TikTok + Reels (Stories fica fixo) pra gerar a banda conservador↔otimista — TikTok é o mais imprevisível por causa do FYP.</p>
+  </details>
+
+  <div class="results" id="results"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let scenarios=[{name:'Cenário A',qty:200},{name:'Cenário B',qty:280}];
+
+const num=id=>parseFloat(document.getElementById(id).value)||0;
+function fmt(n){ if(!isFinite(n)||n<=0) return '—'; if(n>=1e6) return (n/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+'M'; if(n>=1e3) return (n/1e3).toLocaleString('pt-BR',{maximumFractionDigits:0})+'K'; return Math.round(n).toString(); }
+
+function tiers(){
+  return [
+    {pct:num('pct_nano')/100, foll:num('foll_nano'), tt:num('tt_nano')/100, reel:num('reel_nano')/100, st:num('st_nano')/100},
+    {pct:num('pct_micro')/100,foll:num('foll_micro'),tt:num('tt_micro')/100,reel:num('reel_micro')/100,st:num('st_micro')/100},
+    {pct:num('pct_mid')/100,  foll:num('foll_mid'),  tt:num('tt_mid')/100,  reel:num('reel_mid')/100,  st:num('st_mid')/100},
+  ];
+}
+function scope(){ return {tt:num('sc_tt'), reel:num('sc_reel'), telas:num('sc_telas')}; }
+
+// impactos médios por perfil (ponderado pelas faixas), para um multiplicador
+function perCreator(mult){
+  const s=scope(); let tt=0,reel=0,st=0;
+  tiers().forEach(t=>{
+    tt   += t.pct * s.tt    * t.tt*mult   * t.foll;
+    reel += t.pct * s.reel  * t.reel*mult * t.foll;
+    st   += t.pct * s.telas * t.st        * t.foll;
+  });
+  return {tt,reel,st,total:tt+reel+st};
+}
+
+function renderScnInputs(){
+  document.getElementById('scnList').innerHTML = scenarios.map((s,i)=>`
+    <div class="scn-row">
+      <div class="f name"><label>Nome</label><input value="${(s.name||'').replace(/"/g,'&quot;')}" oninput="scenarios[${i}].name=this.value;recalc()"></div>
+      <div class="f qty"><label>Qtd de UGCs</label><input type="number" value="${s.qty}" oninput="scenarios[${i}].qty=parseFloat(this.value)||0;recalc()"></div>
+      ${scenarios.length>1?`<button class="danger" onclick="delScn(${i})">✕ remover</button>`:''}
+    </div>`).join('');
+}
+function addScn(){ scenarios.push({name:'Cenário '+String.fromCharCode(65+scenarios.length), qty:100}); renderScnInputs(); recalc(); }
+function delScn(i){ scenarios.splice(i,1); renderScnInputs(); recalc(); }
+
+function recalc(){
+  // aviso de soma dos %
+  const somaPct=num('pct_nano')+num('pct_micro')+num('pct_mid');
+  const pw=document.getElementById('pctWarn');
+  if(Math.round(somaPct)!==100){ pw.style.display='block'; pw.textContent='⚠️ Os % do pool somam '+somaPct+'% (o ideal é 100%).'; }
+  else pw.style.display='none';
+
+  const mCons=num('m_cons'), mBase=num('m_base'), mOtim=num('m_otim');
+  const base=perCreator(mBase), cons=perCreator(mCons), otim=perCreator(mOtim);
+  const mediaSeg = tiers().reduce((a,t)=>a+t.pct*t.foll,0);
+
+  const cols=scenarios.map(s=>`<th>${(s.name||'').replace(/</g,'&lt;')}<br><span style="font-weight:600;opacity:.8">${fmt(s.qty)} UGCs</span></th>`).join('');
+  const rowTT=scenarios.map(s=>`<td>${fmt(base.tt*s.qty)}</td>`).join('');
+  const rowRe=scenarios.map(s=>`<td>${fmt(base.reel*s.qty)}</td>`).join('');
+  const rowSt=scenarios.map(s=>`<td>${fmt(base.st*s.qty)}</td>`).join('');
+  const rowTot=scenarios.map(s=>`<td class="big">${fmt(base.total*s.qty)}</td>`).join('');
+  const rowRange=scenarios.map(s=>`<td>${fmt(cons.total*s.qty)} – ${fmt(otim.total*s.qty)}</td>`).join('');
+
+  let read='';
+  if(scenarios.length>=2){
+    const a=scenarios[0], b=scenarios[scenarios.length-1];
+    const ia=base.total*a.qty, ib=base.total*b.qty;
+    const dif = ia>0 ? Math.round((ib/ia-1)*100) : 0;
+    read=`💡 <b>${(b.name||'')}</b> entrega ~<b>${fmt(ib)}</b> impactos vs ~<b>${fmt(ia)}</b> do <b>${(a.name||'')}</b> — uma diferença de <b>${dif>=0?'+':''}${dif}%</b> por +${fmt(b.qty-a.qty)} perfis. Cada perfil rende ~${fmt(base.total)} impactos (média do pool ~${fmt(mediaSeg)} seguidores).`;
+  }
+
+  document.getElementById('results').innerHTML=`
+    <h2>📈 Impactos estimados por cenário</h2>
+    <table>
+      <thead><tr><th>Métrica</th>${cols}</tr></thead>
+      <tbody>
+        <tr><td class="metric">👁 TikTok</td>${rowTT}</tr>
+        <tr><td class="metric">🎬 Reels</td>${rowRe}</tr>
+        <tr><td class="metric">📱 Stories</td>${rowSt}</tr>
+        <tr><td class="metric">🎯 Total (base)</td>${rowTot}</tr>
+        <tr><td class="metric">↕ Faixa (cons.–otim.)</td>${rowRange}</tr>
+      </tbody>
+    </table>
+    ${read?`<div class="read">${read}</div>`:''}`;
+}
+
+renderScnInputs();
+recalc();
+</script>
+</body>
+</html>

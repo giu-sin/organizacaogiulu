@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publination — Calculadora de Estimativas</title>
+<style>
+  :root{
+    --cream:#FBF3CD; --black:#161514; --card:#fffdf2; --border:#16151422;
+    --muted:#6b675a; --pill:#16151410; --good:#1d7a4f; --accent:#161514;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+  body{background:var(--cream);color:var(--black);padding:20px;font-size:14.5px}
+  .wrap{max-width:1100px;margin:0 auto}
+
+  .topnav{display:flex;align-items:center;gap:14px;padding:10px 20px;margin:-20px -20px 18px;background:var(--black);flex-wrap:wrap}
+  .topnav .brand{font-size:19px;letter-spacing:-.5px;text-decoration:none;color:var(--cream)}
+  .topnav .brand b{font-weight:900}.topnav .brand i{font-weight:600;font-style:italic}
+  .topnav .sp{flex:1}
+  .topnav a.lnk{text-decoration:none;color:var(--cream);font-weight:800;font-size:13px;padding:7px 14px;border-radius:30px;opacity:.75}
+  .topnav a.lnk:hover{opacity:1;background:#fbf3cd22}
+  .topnav a.lnk.active{background:var(--cream);color:var(--black);opacity:1}
+
+  /* logo */
+  .logo{font-size:34px;letter-spacing:-1px;user-select:none;margin-bottom:2px}
+  .logo b{font-weight:900}
+  .logo i{font-weight:600;font-style:italic}
+  .sub{color:var(--muted);margin-bottom:18px;font-size:14px}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;position:sticky;top:0;background:var(--cream);padding:10px 0;z-index:5}
+  button{background:var(--black);color:var(--cream);border:none;border-radius:30px;padding:12px 20px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .1s}
+  button:hover{transform:scale(1.03)}
+  button.ghost{background:transparent;color:var(--black);border:2px solid var(--black)}
+  button.danger{background:transparent;color:#b3261e;border:none;font-size:13px;font-weight:700;padding:6px 10px}
+
+  .influ{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:0;margin-bottom:10px;overflow:hidden;box-shadow:3px 3px 0 var(--black)}
+  .influ-top{background:var(--black);color:var(--cream);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;cursor:pointer}
+  .influ-top .num{background:var(--cream);color:var(--black);font-weight:900;border-radius:50%;width:22px;height:22px;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .influ-top input{background:transparent;border:none;border-bottom:2px dashed #fbf3cd66;color:var(--cream);font-size:14px;font-weight:800;padding:2px;min-width:150px;max-width:200px;flex:0 1 auto}
+  .influ-top input::placeholder{color:#fbf3cd99}
+  .influ-top input:focus{outline:none;border-bottom-color:var(--cream)}
+  .influ-top .chips{font-size:12px;font-weight:700;opacity:.9;margin-left:auto}
+  .influ-top .chev{font-size:13px;font-weight:900;flex-shrink:0;opacity:.8}
+  .influ-body{padding:12px 14px}
+
+  .step{margin-bottom:10px}
+  .step-title{display:flex;align-items:center;gap:7px;font-weight:900;font-size:13px;margin-bottom:6px}
+  .step-title .n{background:var(--black);color:var(--cream);border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center}
+  .step-hint{color:var(--muted);font-size:11.5px;margin-bottom:8px;margin-left:25px}
+
+  .fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-left:25px}
+  .f label{display:block;font-size:11.5px;font-weight:700;margin-bottom:2px}
+  .f .hint{display:block;font-size:10px;color:var(--muted);font-weight:400}
+  input,select{background:#fff;border:1.5px solid var(--border);border-radius:8px;color:var(--black);padding:6px 9px;font-size:13px;width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--black)}
+  .f .auto{font-size:10.5px;color:var(--good);margin-top:2px;font-weight:600}
+  input.missing{border-color:#b3261e;background:#fff0ef}
+
+  .platrow{display:flex;gap:8px;margin-left:25px;margin-bottom:8px;flex-wrap:wrap}
+  .plat-toggle{display:flex;align-items:center;gap:6px;background:var(--pill);border:2px solid transparent;border-radius:30px;padding:5px 13px;cursor:pointer;font-weight:800;font-size:12.5px;user-select:none}
+  .plat-toggle.on{background:var(--black);color:var(--cream)}
+  .platbox{background:var(--pill);border-radius:10px;padding:10px;margin-left:25px;margin-bottom:8px}
+  .platbox h4{font-size:12.5px;font-weight:900;margin-bottom:8px}
+  .platbox .fields{margin-left:0}
+
+  .results{margin:0 14px 12px 39px;background:var(--black);color:var(--cream);border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 22px}
+  .kpi .v{font-size:14.5px;font-weight:900}
+  .kpi .l{font-size:9px;opacity:.75;text-transform:uppercase;letter-spacing:.4px}
+  .empty-res{margin:0 14px 12px 39px;border:2px dashed var(--border);border-radius:10px;padding:10px;color:var(--muted);font-size:12.5px;text-align:center}
+
+  .tierTag{font-size:11px;background:#fbf3cd33;border-radius:20px;padding:3px 10px;font-weight:600}
+
+  .summary{background:var(--black);color:var(--cream);border-radius:18px;padding:22px;margin:24px 0;box-shadow:4px 4px 0 #16151455}
+  .summary h2{font-size:17px;margin-bottom:16px;font-weight:900}
+  .summary .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px 20px}
+  .summary .v{font-size:clamp(15px,1.6vw,20px);font-weight:900;overflow-wrap:anywhere;line-height:1.2}
+  .summary .l{font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+  .summary .alert{background:#ffb45422;border:1px solid #ffb454;color:#ffd9a0;border-radius:10px;padding:10px 14px;margin-top:14px;font-size:13px}
+
+  /* público do squad */
+  .aud{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:16px 18px;margin:0 0 24px;box-shadow:3px 3px 0 var(--black)}
+  .aud h2{font-size:15px;font-weight:900;margin-bottom:2px;display:inline}
+  .aud .src{font-size:11px;color:var(--muted);margin-bottom:10px;display:inline;margin-left:8px}
+  .aud .headline{background:var(--cream);border:2px dashed var(--black);border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.5;margin:10px 0 14px}
+  .aud .cols2{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px 20px}
+  .aud h5{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+  .bar{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:11px}
+  .bar .lbl{width:72px;flex-shrink:0;font-weight:700;font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar .track{flex:1;background:var(--pill);border-radius:20px;height:9px;overflow:hidden}
+  .bar .fill{background:var(--black);height:100%;border-radius:20px;min-width:2px}
+  .bar .pct{width:38px;font-weight:800;font-size:10.5px;text-align:right}
+  .gsplit{display:flex;border-radius:20px;overflow:hidden;height:22px;font-size:11px;font-weight:800;margin-bottom:6px}
+  .gsplit .gf{background:var(--black);color:var(--cream);display:flex;align-items:center;justify-content:center}
+  .gsplit .gm{background:var(--pill);display:flex;align-items:center;justify-content:center}
+
+  details.config{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+  details.config summary{cursor:pointer;font-weight:800;font-size:14px}
+  .config .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+  .config label{display:block;font-size:11.5px;font-weight:700;margin-bottom:3px}
+  .config .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .config h6{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:14px}
+
+  .scntabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .scntab{display:flex;align-items:center;gap:7px;background:var(--card);border:2px solid var(--black);border-radius:30px;padding:7px 14px;cursor:pointer;font-weight:800;font-size:13px}
+  .scntab.on{background:var(--black);color:var(--cream)}
+  .scntab .cnt{font-size:10.5px;background:#16151420;border-radius:20px;padding:1px 7px}
+  .scntab.on .cnt{background:#fbf3cd33}
+  .scntab .x{opacity:.55;font-size:11px;margin-left:2px}
+  .scntab .x:hover{opacity:1;color:#b3261e}
+  .scntab.add{border-style:dashed;font-weight:700;background:transparent}
+  .scnhint{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .compare{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:16px 18px;margin:0 0 24px;box-shadow:3px 3px 0 var(--black);overflow-x:auto}
+  .compare h2{font-size:15px;font-weight:900;margin-bottom:10px}
+  .compare table{border-collapse:collapse;width:100%;font-size:12.5px}
+  .compare th,.compare td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
+  .compare thead th{background:var(--black);color:var(--cream);font-size:12px;white-space:nowrap}
+  .compare td.metric{font-weight:800;background:var(--pill);white-space:nowrap}
+  .compare td.best{background:#d9f0e3;font-weight:900}
+  .compare .pub{font-size:11px;line-height:1.45}
+  .compare .read{margin-top:12px;background:var(--cream);border:2px dashed var(--black);border-radius:10px;padding:10px 14px;font-size:13px;line-height:1.55}
+  .incs{display:flex;align-items:center;gap:5px;background:#fbf3cd22;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;user-select:none}
+  .incs input{width:14px;height:14px;accent-color:var(--cream);cursor:pointer}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a class="brand" href="index.html"><b>PUBLI</b><i>NATION</i></a>
+  <span class="sp"></span>
+  <a class="lnk active" href="estimativas.html">📊 Estimativas</a>
+  <a class="lnk" href="mapeamento.html">🗺️ Mapeamento</a>
+  <a class="lnk" href="ugc.html">👥 UGC</a>
+</div>
+<div class="wrap">
+  <div class="logo"><b>PUBLI</b><i>NATION</i></div>
+  <p class="sub">Calculadora de estimativas pra campanhas com influ ✨ Preenche os campos e os resultados aparecem sozinhos.</p>
+
+  <div class="toolbar">
+    <button onclick="addInflu()">+ Adicionar influ</button>
+    <button class="ghost" onclick="document.getElementById('csvfile').click()">📥 Importar do Sprout (CSV)</button>
+    <button class="ghost" onclick="exportCSV()">⬇ Baixar planilha (CSV)</button>
+    <button class="ghost" onclick="toggleAll()">⌃ Abrir/fechar tudo</button>
+    <input type="file" id="csvfile" accept=".csv" style="display:none" onchange="loadCSV(this)">
+  </div>
+
+  <div id="importModal" style="display:none;position:fixed;inset:0;background:#16151488;z-index:50;align-items:center;justify-content:center">
+    <div style="background:var(--card);border:2px solid var(--black);border-radius:18px;padding:24px;max-width:480px;width:92%;box-shadow:4px 4px 0 var(--black)">
+      <h3 style="font-weight:900;margin-bottom:6px">📥 Achei <span id="impCount">0</span> influs na planilha!</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Qual é o escopo? Vou aplicar pra todo mundo (depois dá pra ajustar um por um).</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div class="f"><label>Reels por influ</label><input id="scReels" value="1"></div>
+        <div class="f"><label>TikToks por influ</label><input id="scTT" value="1"></div>
+        <div class="f"><label>Telas de Stories por influ</label><input id="scTelas" value="3"></div>
+        <div class="f"><label>Product Placements por influ</label><input id="scPP" value=""></div>
+        <div class="f"><label>Vídeos dedicados (YT) por influ</label><input id="scDedic" value=""></div>
+        <div class="f"><label>Shorts por influ</label><input id="scShorts" value=""></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">⚠️ O Sprout não exporta média de views — esses campos vão ficar <b style="color:#b3261e">destacados em vermelho</b> pro time preencher. O engajamento eu estimo pela taxa da planilha. No YouTube, se faltar a média eu estimo pelos inscritos (benchmark).</p>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="ghost" onclick="importModal.style.display='none'">Cancelar</button>
+        <button onclick="confirmImport()">Importar ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <details class="config">
+    <summary>⚙ Taxas de mercado (só mexer se souber o que tá fazendo 😉)</summary>
+    <div class="grid">
+      <div><label>Stories 1K–10K (%)</label><input type="number" step="0.1" id="r1" value="6.5" oninput="recalcAll()"></div>
+      <div><label>Stories 10K–50K (%)</label><input type="number" step="0.1" id="r2" value="2.6" oninput="recalcAll()"></div>
+      <div><label>Stories 50K–200K (%)</label><input type="number" step="0.1" id="r3" value="1.6" oninput="recalcAll()"></div>
+      <div><label>Stories 200K+ (%)</label><input type="number" step="0.1" id="r4" value="1.2" oninput="recalcAll()"></div>
+      <div><label>CTR cliques stories (%)</label><input type="number" step="0.1" id="ctr" value="0.5" oninput="recalcAll()"></div>
+    </div>
+    <h6>▶️ YouTube</h6>
+    <div class="grid">
+      <div><label>Views vídeo longo (% dos inscritos)</label><input type="number" step="0.5" id="ytVR" value="14" oninput="recalcAll()"></div>
+      <div><label>Views Shorts (% dos inscritos)</label><input type="number" step="0.5" id="ytSR" value="10" oninput="recalcAll()"></div>
+      <div><label>Retenção da inserção (% das views)</label><input type="number" step="1" id="ytRet" value="60" oninput="recalcAll()"></div>
+      <div><label>Eng. vídeo longo (% das views)</label><input type="number" step="0.1" id="ytEngL" value="3" oninput="recalcAll()"></div>
+      <div><label>Eng. Shorts (% das views)</label><input type="number" step="0.1" id="ytEngS" value="4.5" oninput="recalcAll()"></div>
+      <div><label>CTR link descrição (%)</label><input type="number" step="0.1" id="ytCTR" value="1" oninput="recalcAll()"></div>
+    </div>
+    <p class="note">Alcance de stories por faixa de seguidores: RivalIQ 2024. A faixa certa é aplicada sozinha — não precisa escolher. Cliques: benchmark de link sticker fica entre 0,3% e 1,0% dos impactos de stories.<br>
+    <b>YouTube:</b> quando faltar a média real, estimo views como % dos inscritos — vídeo longo ~14% (mediana de mercado fica entre 10–20%) e Shorts ~10% (variância enorme, prefere sempre a média real). Inserção/integração conta ~60% das views do vídeo (skip rate de mid-roll fica entre 35–55%). Engajamento por view: ~3% em vídeo longo (macro ~2%, micro 3–6%) e ~4,5% em Shorts (Shorts engajam ~1,4× mais). Cliques no link da descrição: 0,5–2% das views, uso 1% como padrão conservador.</p>
+  </details>
+
+  <div class="scnhint">🎬 <b>Cenários</b> — monte Cenário 1, 2, 3… marcando quais influs entram (caixinha “cenário” em cada card). O resumo e o público abaixo são do cenário ativo. (Dois cliques no nome pra renomear.)</div>
+  <div id="scnTabs" class="scntabs"></div>
+
+  <div id="list"></div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="aud" id="audience" style="display:none"></div>
+
+  <div class="compare" id="compare" style="display:none"></div>
+</div>
+
+<script>
+let influs = [];
+let nextId = 1;
+let scenarios = [{name:'Cenário 1', ids:[]}];
+let activeScn = 0;
+const scn = ()=>scenarios[activeScn];
+const scnHas = id=>!!(scn()&&scn().ids.includes(id));
+
+const fmt = n => isFinite(n)&&n>0 ? Math.round(n).toLocaleString('pt-BR') : '—';
+const fmtShort = n => !isFinite(n)||n<=0 ? '—' : n>=1e6 ? (n/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+'M' : n>=1e3 ? (n/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1})+'K' : Math.round(n).toString();
+const fmtR$ = n => isFinite(n) ? n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '—';
+const fmtPct = n => isFinite(n) ? (n*100).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%' : '—';
+
+// aceita 650K, 1.5M, 1,5M, 7400000, 7.400.000
+function parseNum(s){
+  if(s===null||s===undefined) return 0;
+  s = String(s).trim().toLowerCase().replace(/\s/g,'');
+  if(!s) return 0;
+  let mult = 1;
+  if(/k$/.test(s)){mult=1e3;s=s.slice(0,-1);}
+  else if(/(m|mi)$/.test(s)){mult=1e6;s=s.replace(/(mi|m)$/,'');}
+  if(s.includes(',')) s = s.replace(/\./g,'').replace(',','.');
+  else if((s.match(/\./g)||[]).length>1 || (/\.\d{3}$/.test(s)&&mult===1)) s = s.replace(/\./g,'');
+  const v = parseFloat(s);
+  return isFinite(v) ? v*mult : 0;
+}
+
+function tierRate(followers){
+  const r=[+r1.value,+r2.value,+r3.value,+r4.value];
+  if(followers<=0) return {rate:0,label:''};
+  if(followers<10000) return {rate:r[0]/100,label:'faixa 1K–10K → '+r[0].toLocaleString('pt-BR')+'%'};
+  if(followers<50000) return {rate:r[1]/100,label:'faixa 10K–50K → '+r[1].toLocaleString('pt-BR')+'%'};
+  if(followers<200000) return {rate:r[2]/100,label:'faixa 50K–200K → '+r[2].toLocaleString('pt-BR')+'%'};
+  return {rate:r[3]/100,label:'faixa 200K+ → '+r[3].toLocaleString('pt-BR')+'%'};
+}
+
+function addInflu(data){
+  const id = nextId++;
+  influs.push({id, useIG:true, useTT:false, useYT:false, ...(data||{})});
+  if(scn()) scn().ids.push(id);
+  render();
+}
+// ----- cenários -----
+function renderScnTabs(){
+  const el=document.getElementById('scnTabs'); if(!el) return;
+  el.innerHTML = scenarios.map((s,i)=>{
+    const n=s.ids.filter(id=>influs.some(x=>x.id===id)).length;
+    return `<div class="scntab ${i===activeScn?'on':''}" onclick="setScn(${i})" title="Clica pra ativar"><span ondblclick="renameScn(${i},event)">${(s.name||'').replace(/</g,'&lt;')}</span><span class="cnt">${n}</span>${scenarios.length>1?`<span class="x" onclick="delScn(${i},event)">✕</span>`:''}</div>`;
+  }).join('') + `<div class="scntab add" onclick="addScn()">+ Novo cenário</div>`;
+}
+function setScn(i){ activeScn=i; render(); }
+function addScn(){ scenarios.push({name:'Cenário '+(scenarios.length+1), ids:[]}); activeScn=scenarios.length-1; render(); }
+function delScn(i,e){ e.stopPropagation(); if(scenarios.length<=1) return; if(!confirm('Remover '+scenarios[i].name+'?')) return; scenarios.splice(i,1); if(activeScn>=scenarios.length) activeScn=scenarios.length-1; render(); }
+function renameScn(i,e){ e.stopPropagation(); const n=prompt('Nome do cenário:',scenarios[i].name); if(n!==null){ scenarios[i].name=n.trim()||scenarios[i].name; render(); } }
+function toggleIn(id,v){ const s=scn(); if(!s) return; const k=s.ids.indexOf(id); if(v&&k<0)s.ids.push(id); if(!v&&k>=0)s.ids.splice(k,1); recalcAll(); renderScnTabs(); }
+function removeInflu(id){ if(confirm('Remover esse influ?')){ influs = influs.filter(i=>i.id!==id); render(); } }
+function togglePlat(id,p){ const i=influs.find(x=>x.id===id); i[p]=!i[p]; render(); }
+function toggleCard(id){ const i=influs.find(x=>x.id===id); i.collapsed=!i.collapsed; render(); }
+function toggleAll(){ const anyOpen=influs.some(i=>!i.collapsed); influs.forEach(i=>i.collapsed=anyOpen); render(); }
+
+function field(id,key,label,ph,hint,auto){
+  return `<div class="f"><label>${label}${hint?`<span class="hint">${hint}</span>`:''}</label><input id="${key}_${id}" placeholder="${ph||''}" oninput="recalcAll()">${auto?`<div class="auto" id="${key}auto_${id}"></div>`:''}</div>`;
+}
+
+const KEYS=['nome','orcamento','segIG','viewsReels','engReels','qtdReels','qtdTelas','qtdPP','impTela','segTT','viewsTT','engTT','qtdTT','segYT','viewsYT','engYT','qtdDedic','qtdInser','viewsShorts','engShorts','qtdShorts'];
+
+function render(){
+  renderScnTabs();
+  const list = document.getElementById('list');
+  list.innerHTML = influs.map((i,idx)=>`
+  <div class="influ">
+    <div class="influ-top" onclick="toggleCard(${i.id})" title="Clica pra ${i.collapsed?'abrir':'recolher'}">
+      <span class="chev">${i.collapsed?'▸':'▾'}</span>
+      <div class="num">${idx+1}</div>
+      <label class="incs" onclick="event.stopPropagation()" title="Incluir neste cenário"><input type="checkbox" ${scnHas(i.id)?'checked':''} onclick="toggleIn(${i.id},this.checked)"> cenário</label>
+      <input id="nome_${i.id}" placeholder="@arroba do influ" oninput="recalcAll()" onclick="event.stopPropagation()">
+      <span class="tierTag" id="tier_${i.id}"></span>
+      <span class="chips" id="chips_${i.id}"></span>
+      <button class="danger" onclick="event.stopPropagation();removeInflu(${i.id})">✕</button>
+    </div>
+    <div style="display:${i.collapsed?'none':'block'}">
+    <div class="influ-body">
+
+      <div class="step">
+        <div class="step-title"><span class="n">1</span> Quem é o influ?</div>
+        <div class="step-hint">Quanto vai custar e em quais redes ele vai postar.</div>
+        <div class="fields" style="margin-bottom:12px;grid-template-columns:minmax(165px,280px)">
+          ${field(i.id,'orcamento','Orçamento (R$)','ex: 280800','cachê total do influ')}
+        </div>
+        <div class="platrow">
+          <div class="plat-toggle ${i.useIG?'on':''}" onclick="togglePlat(${i.id},'useIG')">${i.useIG?'✓':'+'} Instagram</div>
+          <div class="plat-toggle ${i.useTT?'on':''}" onclick="togglePlat(${i.id},'useTT')">${i.useTT?'✓':'+'} TikTok</div>
+          <div class="plat-toggle ${i.useYT?'on':''}" onclick="togglePlat(${i.id},'useYT')">${i.useYT?'✓':'+'} YouTube</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title"><span class="n">2</span> Números do influ + escopo</div>
+        <div class="step-hint">Os números você pega no perfil público (média das últimas postagens). O escopo é o que tá no plano.</div>
+        ${i.useIG?`
+        <div class="platbox">
+          <h4>📸 Instagram</h4>
+          <div class="fields">
+            ${field(i.id,'segIG','Seguidores','ex: 7.4M','pode escrever 7.4M ou 7400000')}
+            ${field(i.id,'viewsReels','Média de views dos Reels','ex: 1.5M','soma uns 3 reels recentes e divide')}
+            ${field(i.id,'engReels','Média de engajamento dos Reels','ex: 52K','curtidas + comentários + compart.')}
+            ${field(i.id,'qtdReels','Quantos Reels no escopo?','ex: 3','')}
+            ${field(i.id,'qtdTelas','Quantas telas de Stories?','ex: 12','total de telas, não sequências')}
+            ${field(i.id,'qtdPP','Quantos Product Placements?','ex: 6','deixa vazio se não tiver')}
+            ${field(i.id,'impTela','Impacto por tela de stories','deixa vazio = automático ✨','só preenche se tiver o dado real do influ',true)}
+          </div>
+        </div>`:''}
+        ${i.useTT?`
+        <div class="platbox">
+          <h4>🎵 TikTok</h4>
+          <div class="fields">
+            ${field(i.id,'segTT','Seguidores','ex: 962K','')}
+            ${field(i.id,'viewsTT','Média de views dos vídeos','ex: 213K','média dos últimos vídeos')}
+            ${field(i.id,'engTT','Média de engajamento','ex: 5411','curtidas + comentários + compart.')}
+            ${field(i.id,'qtdTT','Quantas publicações no escopo?','ex: 3','')}
+          </div>
+        </div>`:''}
+        ${i.useYT?`
+        <div class="platbox">
+          <h4>▶️ YouTube</h4>
+          <div class="fields">
+            ${field(i.id,'segYT','Inscritos','ex: 850K','pode escrever 850K ou 850000')}
+            ${field(i.id,'viewsYT','Média de views (vídeo longo)','deixa vazio = automático ✨','média dos últimos vídeos; vazio = estimo pelos inscritos',true)}
+            ${field(i.id,'engYT','Média de engajamento (vídeo)','deixa vazio = automático ✨','curtidas + comentários por vídeo',true)}
+            ${field(i.id,'qtdDedic','Quantos vídeos dedicados?','ex: 1','vídeo inteiro sobre a marca')}
+            ${field(i.id,'qtdInser','Quantas inserções?','ex: 2','trecho de 60–90s dentro de um vídeo')}
+            ${field(i.id,'viewsShorts','Média de views dos Shorts','deixa vazio = automático ✨','vazio = estimo pelos inscritos (variância alta!)',true)}
+            ${field(i.id,'engShorts','Média de engajamento (Shorts)','deixa vazio = automático ✨','',true)}
+            ${field(i.id,'qtdShorts','Quantos Shorts no escopo?','ex: 2','')}
+          </div>
+        </div>`:''}
+        ${!i.useIG&&!i.useTT&&!i.useYT?'<div class="step-hint" style="color:#b3261e">👆 Marca pelo menos uma rede ali em cima!</div>':''}
+      </div>
+
+      <div class="step">
+        <div class="step-title"><span class="n">3</span> Resultados <span style="font-weight:400;font-size:12px;color:var(--muted)">(automático, não mexe em nada 😌)</span></div>
+      </div>
+    </div>
+    <div id="resbox_${i.id}"></div>
+    </div>
+  </div>`).join('');
+  influs.forEach(i=>{
+    KEYS.forEach(k=>{
+      const el = document.getElementById(k+'_'+i.id);
+      if(el && i[k]!==undefined) el.value = i[k];
+    });
+  });
+  recalcAll();
+}
+
+function calc(i){
+  KEYS.forEach(k=>{ const el=document.getElementById(k+'_'+i.id); if(el) i[k]=el.value; });
+
+  const segIG=i.useIG?parseNum(i.segIG):0, viewsReels=i.useIG?parseNum(i.viewsReels):0, engReels=i.useIG?parseNum(i.engReels):0;
+  const qtdReels=i.useIG?parseNum(i.qtdReels):0, qtdTelas=i.useIG?parseNum(i.qtdTelas):0, qtdPP=i.useIG?parseNum(i.qtdPP):0;
+  const segTT=i.useTT?parseNum(i.segTT):0, viewsTT=i.useTT?parseNum(i.viewsTT):0, engTT=i.useTT?parseNum(i.engTT):0, qtdTT=i.useTT?parseNum(i.qtdTT):0;
+  const orc=parseNum(i.orcamento);
+
+  const tier = tierRate(segIG);
+  const impTelaAuto = segIG*tier.rate;
+  const impTela = (i.useIG&&parseNum(i.impTela)>0) ? parseNum(i.impTela) : impTelaAuto;
+
+  const impReels = viewsReels*qtdReels;
+  const engReelsT = engReels*qtdReels;
+  const impStories = impTela*qtdTelas;
+  const impPP = impTela*qtdPP;
+  const impTT = viewsTT*qtdTT;
+  const engTTT = engTT*qtdTT;
+
+  // ----- YouTube -----
+  const segYT=i.useYT?parseNum(i.segYT):0;
+  const qtdDedic=i.useYT?parseNum(i.qtdDedic):0, qtdInser=i.useYT?parseNum(i.qtdInser):0, qtdShorts=i.useYT?parseNum(i.qtdShorts):0;
+  const viewsYTAuto = segYT*(+ytVR.value/100);
+  const viewsYT = (i.useYT&&parseNum(i.viewsYT)>0) ? parseNum(i.viewsYT) : viewsYTAuto;
+  const viewsShortsAuto = segYT*(+ytSR.value/100);
+  const viewsShorts = (i.useYT&&parseNum(i.viewsShorts)>0) ? parseNum(i.viewsShorts) : viewsShortsAuto;
+  const engYTAuto = viewsYT*(+ytEngL.value/100);
+  const engYTv = (i.useYT&&parseNum(i.engYT)>0) ? parseNum(i.engYT) : engYTAuto;
+  const engShortsAuto = viewsShorts*(+ytEngS.value/100);
+  const engShortsV = (i.useYT&&parseNum(i.engShorts)>0) ? parseNum(i.engShorts) : engShortsAuto;
+
+  const impDedic = viewsYT*qtdDedic;
+  const impInser = viewsYT*(+ytRet.value/100)*qtdInser;
+  const impShorts = viewsShorts*qtdShorts;
+  const impYT = impDedic+impInser+impShorts;
+  // engajamento de inserção fica no vídeo do influ, não conto pra marca
+  const engYTT = engYTv*qtdDedic + engShortsV*qtdShorts;
+  const cliquesYT = impYT*(+ytCTR.value/100);
+
+  const impTotal = impReels+impStories+impPP+impTT+impYT;
+  const engTotal = engReelsT+engTTT+engYTT;
+  const txEng = impTotal>0 ? engTotal/impTotal : NaN;
+  const cpm = (orc>0&&impTotal>0) ? orc/impTotal*1000 : NaN;
+  const cpe = (orc>0&&engTotal>0) ? orc/engTotal : NaN;
+  const cliques = impStories*(+ctr.value/100) + cliquesYT;
+
+  return {tier,impTelaAuto,impTela,impReels,engReelsT,impStories,impPP,impTT,engTTT,impTotal,engTotal,txEng,cpm,cpe,cliques,orc,segIG,segTT,qtdReels,qtdTelas,qtdPP,qtdTT,segYT,viewsYTAuto,viewsYT,viewsShortsAuto,viewsShorts,engYTAuto,engShortsAuto,impDedic,impInser,impShorts,impYT,engYTT,cliquesYT,qtdDedic,qtdInser,qtdShorts};
+}
+
+function recalcAll(){
+  let tImp=0,tEng=0,tOrc=0,tCliq=0,tReels=0,tTelas=0,tPP=0,tTT=0,tDedic=0,tInser=0,tShorts=0;
+  influs.forEach(i=>{
+    const c = calc(i);
+    const tierEl=document.getElementById('tier_'+i.id);
+    if(tierEl){ tierEl.textContent = (!i.collapsed&&c.segIG>0) ? '📊 stories: '+c.tier.label : ''; tierEl.style.display=(!i.collapsed&&c.segIG>0)?'':'none'; }
+    const chips=document.getElementById('chips_'+i.id);
+    if(chips){
+      const falta=(i.useIG&&parseNum(i.qtdReels)>0&&parseNum(i.viewsReels)<=0)||(i.useTT&&parseNum(i.qtdTT)>0&&parseNum(i.viewsTT)<=0)||(i.useYT&&(parseNum(i.qtdDedic)>0||parseNum(i.qtdInser)>0||parseNum(i.qtdShorts)>0)&&parseNum(i.segYT)<=0&&parseNum(i.viewsYT)<=0&&parseNum(i.viewsShorts)<=0);
+      chips.innerHTML = i.collapsed ? (c.impTotal>0?`👁 ${fmtShort(c.impTotal)} &nbsp;❤️ ${fmtShort(c.engTotal)} &nbsp;${isFinite(c.cpm)?'CPM R$'+c.cpm.toFixed(0):''} ${falta?'&nbsp;<span style="color:#ff9d96">⚠ faltam views</span>':''}`:`<span style="opacity:.6">sem dados ainda</span>${falta?' <span style="color:#ff9d96">⚠</span>':''}`) : '';
+    }
+    const autoEl=document.getElementById('impTelaauto_'+i.id);
+    if(autoEl) autoEl.textContent = c.segIG>0 ? '✨ automático: '+fmt(c.impTelaAuto)+' por tela' : '';
+    // autos do YouTube
+    const yv=document.getElementById('viewsYTauto_'+i.id);
+    if(yv) yv.textContent = (c.segYT>0&&parseNum(i.viewsYT)<=0) ? '✨ automático: '+fmt(c.viewsYTAuto)+' por vídeo' : '';
+    const ys=document.getElementById('viewsShortsauto_'+i.id);
+    if(ys) ys.textContent = (c.segYT>0&&parseNum(i.viewsShorts)<=0) ? '✨ automático: '+fmt(c.viewsShortsAuto)+' por Short' : '';
+    const ye=document.getElementById('engYTauto_'+i.id);
+    if(ye) ye.textContent = (c.viewsYT>0&&parseNum(i.engYT)<=0) ? '✨ automático: '+fmt(c.engYTAuto)+' por vídeo' : '';
+    const yes=document.getElementById('engShortsauto_'+i.id);
+    if(yes) yes.textContent = (c.viewsShorts>0&&parseNum(i.engShorts)<=0) ? '✨ automático: '+fmt(c.engShortsAuto)+' por Short' : '';
+    // destaca views faltando (ex: após importar do Sprout)
+    const vr=document.getElementById('viewsReels_'+i.id);
+    if(vr) vr.classList.toggle('missing', i.useIG && parseNum(i.segIG)>0 && parseNum(i.qtdReels)>0 && parseNum(i.viewsReels)<=0);
+    const vt=document.getElementById('viewsTT_'+i.id);
+    if(vt) vt.classList.toggle('missing', i.useTT && parseNum(i.segTT)>0 && parseNum(i.qtdTT)>0 && parseNum(i.viewsTT)<=0);
+    const sy=document.getElementById('segYT_'+i.id);
+    if(sy) sy.classList.toggle('missing', i.useYT && (parseNum(i.qtdDedic)>0||parseNum(i.qtdInser)>0||parseNum(i.qtdShorts)>0) && parseNum(i.segYT)<=0 && parseNum(i.viewsYT)<=0 && parseNum(i.viewsShorts)<=0);
+    const box=document.getElementById('resbox_'+i.id);
+    if(box){
+      if(c.impTotal>0){
+        box.innerHTML = `<div class="results">
+          ${c.impReels>0?`<div class="kpi"><div class="v">${fmt(c.impReels)}</div><div class="l">Impactos Reels</div></div>`:''}
+          ${c.impStories>0?`<div class="kpi"><div class="v">${fmt(c.impStories)}</div><div class="l">Impactos Stories</div></div>`:''}
+          ${c.impPP>0?`<div class="kpi"><div class="v">${fmt(c.impPP)}</div><div class="l">Impactos PP</div></div>`:''}
+          ${c.impTT>0?`<div class="kpi"><div class="v">${fmt(c.impTT)}</div><div class="l">Impactos TikTok</div></div>`:''}
+          ${c.impDedic>0?`<div class="kpi"><div class="v">${fmt(c.impDedic)}</div><div class="l">Impactos YT dedicado</div></div>`:''}
+          ${c.impInser>0?`<div class="kpi"><div class="v">${fmt(c.impInser)}</div><div class="l">Impactos YT inserção</div></div>`:''}
+          ${c.impShorts>0?`<div class="kpi"><div class="v">${fmt(c.impShorts)}</div><div class="l">Impactos Shorts</div></div>`:''}
+          <div class="kpi"><div class="v">${fmt(c.impTotal)}</div><div class="l">Impactos totais</div></div>
+          <div class="kpi"><div class="v">${fmt(c.engTotal)}</div><div class="l">Engajamentos</div></div>
+          <div class="kpi"><div class="v">${fmtPct(c.txEng)}</div><div class="l">Tx engajamento</div></div>
+          <div class="kpi"><div class="v">${fmtR$(c.cpm)}</div><div class="l">CPM</div></div>
+          <div class="kpi"><div class="v">${fmtR$(c.cpe)}</div><div class="l">CPE</div></div>
+          ${c.cliques>0?`<div class="kpi"><div class="v">${fmt(c.cliques)}</div><div class="l">Cliques est.</div></div>`:''}
+        </div>`;
+      } else {
+        box.innerHTML = `<div class="empty-res">✏️ Preenche os números acima que os resultados aparecem aqui sozinhos</div>`;
+      }
+    }
+    if(scnHas(i.id)){
+      tImp+=c.impTotal||0; tEng+=c.engTotal||0; tOrc+=c.orc||0; tCliq+=c.cliques||0;
+      tReels+=c.qtdReels||0; tTelas+=c.qtdTelas||0; tPP+=c.qtdPP||0; tTT+=c.qtdTT||0;
+      tDedic+=c.qtdDedic||0; tInser+=c.qtdInser||0; tShorts+=c.qtdShorts||0;
+    }
+  });
+  const selCount=influs.filter(i=>scnHas(i.id)).length;
+  const entregas=[];
+  if(tReels>0) entregas.push(fmt(tReels)+' Reels');
+  if(tTelas>0) entregas.push(fmt(tTelas)+' telas de Stories');
+  if(tPP>0) entregas.push(fmt(tPP)+' Product Placements');
+  if(tTT>0) entregas.push(fmt(tTT)+' TikToks');
+  if(tDedic>0) entregas.push(fmt(tDedic)+' vídeos dedicados (YT)');
+  if(tInser>0) entregas.push(fmt(tInser)+' inserções (YT)');
+  if(tShorts>0) entregas.push(fmt(tShorts)+' Shorts');
+  document.getElementById('summary').innerHTML = `
+    <h2>🎯 ${(scn()?scn().name:'Resumo')} — é isso que vai pro cliente (${selCount} influ${selCount===1?'':'s'} no cenário)</h2>
+    ${entregas.length?`<div style="background:#fbf3cd1c;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:15px"><b>📦 Entregas totais:</b> ${entregas.join(' · ')} &nbsp;<span style="opacity:.7">(${fmt(tReels+tTelas+tPP+tTT+tDedic+tInser+tShorts)} no total)</span></div>`:''}
+    <div class="grid">
+      <div><div class="v">${fmt(tImp)}</div><div class="l">Impactos estimados</div></div>
+      <div><div class="v">${fmt(tEng)}</div><div class="l">Engajamentos estimados</div></div>
+      <div><div class="v">${tImp>0?fmtPct(tEng/tImp):'—'}</div><div class="l">Tx de engajamento</div></div>
+      <div><div class="v">${tOrc>0?fmtR$(tOrc):'—'}</div><div class="l">Custo total</div></div>
+      <div><div class="v">${tImp>0&&tOrc>0?fmtR$(tOrc/tImp*1000):'—'}</div><div class="l">CPM médio</div></div>
+      <div><div class="v">${tEng>0&&tOrc>0?fmtR$(tOrc/tEng):'—'}</div><div class="l">CPE médio</div></div>
+      <div><div class="v">${fmt(tCliq)}</div><div class="l">Cliques estimados</div></div>
+    </div>
+    ${(()=>{
+      const faltam = influs.filter(i=>scnHas(i.id)&&((i.useIG&&parseNum(i.qtdReels)>0&&parseNum(i.viewsReels)<=0)||(i.useTT&&parseNum(i.qtdTT)>0&&parseNum(i.viewsTT)<=0)||(i.useYT&&(parseNum(i.qtdDedic)>0||parseNum(i.qtdInser)>0||parseNum(i.qtdShorts)>0)&&parseNum(i.segYT)<=0&&parseNum(i.viewsYT)<=0&&parseNum(i.viewsShorts)<=0))).length;
+      if(faltam>0) return `<div class="alert">⚠️ <b>${faltam} influ${faltam===1?'':'s'} sem média de views preenchida</b> (campos em vermelho). Os impactos tão subestimados e a taxa de engajamento distorcida — preenche antes de mandar pro cliente!</div>`;
+      return '';
+    })()}`;
+  renderAudience();
+  renderCompare();
+}
+
+function exportCSV(){
+  const head=['Creator','Orçamento (R$)','Seguidores IG','Qtd Reels','Qtd Telas Stories','Qtd PP','Qtd TikToks','Inscritos YT','Qtd Vídeos Dedicados','Qtd Inserções','Qtd Shorts','Impactos Reels','Impactos Stories','Impactos PP','Seguidores TikTok','Impactos TikTok','Impactos YT Dedicado','Impactos YT Inserção','Impactos Shorts','Impactos Totais','Engajamentos','Tx Engajamento','CPM (R$)','CPE (R$)','Cliques est.'];
+  const rows = influs.map(i=>{
+    const c=calc(i);
+    return [i.nome||'',c.orc,c.segIG,c.qtdReels,c.qtdTelas,c.qtdPP,c.qtdTT,c.segYT,c.qtdDedic,c.qtdInser,c.qtdShorts,Math.round(c.impReels),Math.round(c.impStories),Math.round(c.impPP),c.segTT,Math.round(c.impTT),Math.round(c.impDedic),Math.round(c.impInser),Math.round(c.impShorts),Math.round(c.impTotal),Math.round(c.engTotal),isFinite(c.txEng)?(c.txEng*100).toFixed(2).replace('.',',')+'%':'',isFinite(c.cpm)?c.cpm.toFixed(2).replace('.',','):'',isFinite(c.cpe)?c.cpe.toFixed(2).replace('.',','):'',Math.round(c.cliques)];
+  });
+  let tImp=0,tEng=0,tOrc=0,tR=0,tTe=0,tP=0,tTk=0,tD=0,tIn=0,tS=0;
+  influs.forEach(i=>{const c=calc(i);tImp+=c.impTotal||0;tEng+=c.engTotal||0;tOrc+=c.orc||0;tR+=c.qtdReels||0;tTe+=c.qtdTelas||0;tP+=c.qtdPP||0;tTk+=c.qtdTT||0;tD+=c.qtdDedic||0;tIn+=c.qtdInser||0;tS+=c.qtdShorts||0;});
+  rows.push([]);
+  rows.push(['TOTAL',tOrc,'',tR,tTe,tP,tTk,'',tD,tIn,tS,'','','','','','','','',Math.round(tImp),Math.round(tEng),tImp>0?(tEng/tImp*100).toFixed(2).replace('.',',')+'%':'',tImp>0&&tOrc>0?(tOrc/tImp*1000).toFixed(2).replace('.',','):'',tEng>0&&tOrc>0?(tOrc/tEng).toFixed(2).replace('.',','):'','']);
+  const csv='﻿'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='estimativas_campanha.csv'; a.click();
+}
+
+// ===== importação CSV do Sprout Social =====
+let pendingImport = [];
+
+function parseCSVtext(text){
+  const rows=[]; let row=[], cur='', inQ=false;
+  for(let c=0;c<text.length;c++){
+    const ch=text[c];
+    if(inQ){
+      if(ch==='"'){ if(text[c+1]==='"'){cur+='"';c++;} else inQ=false; }
+      else cur+=ch;
+    } else {
+      if(ch==='"') inQ=true;
+      else if(ch===','){row.push(cur);cur='';}
+      else if(ch==='\n'||ch==='\r'){ if(cur!==''||row.length){row.push(cur);rows.push(row);row=[];cur='';} if(ch==='\r'&&text[c+1]==='\n')c++; }
+      else cur+=ch;
+    }
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+
+function loadCSV(inp){
+  const file=inp.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const rows=parseCSVtext(e.target.result.replace(/^﻿/,''));
+    if(rows.length<2){alert('Hmm, não achei dados nessa planilha 🤔');return;}
+    const head=rows[0];
+    const col=name=>head.indexOf(name);
+    const iNick=col('Instagram Nickname'), iName=col('Name'), iSegIG=col('Instagram Followers'),
+          iErReel=col('Instagram Organic Reel Engagement Rate'), iErIG=col('Instagram Engagement Rate'),
+          iSegTT=col('TikTok Followers'), iErTT=col('TikTok Engagement Rate'),
+          iSegYT=(col('YouTube Followers')>=0?col('YouTube Followers'):col('YouTube Subscribers')), iErYT=col('YouTube Engagement Rate');
+    if(iSegIG<0&&iSegTT<0&&iSegYT<0){alert('Essa planilha não parece ser a exportação de creators do Sprout — não achei as colunas de seguidores.');return;}
+
+    // demografia (gênero, idade, localização) por plataforma
+    const AGE_KEYS=['13 To 17','18 To 24','25 To 34','35 To 44','45 To 54','55 To 64','65 And Over'];
+    const ORD=['Top','Second','Third','Fourth','Fifth'];
+    function demoFrom(prefix,r){
+      const n=name=>{const c=col(name);return c>=0?(parseFloat(r[c])||0):0;};
+      const t=name=>{const c=col(name);return c>=0?(r[c]||'').trim():'';};
+      const male=n(prefix+' Demo Gender Male'), female=n(prefix+' Demo Gender Female');
+      const ages=AGE_KEYS.map(a=>n(prefix+' Demo Age '+a));
+      const locs=type=>ORD.map(o=>({n:t(prefix+' Demo '+o+' '+type),v:n(prefix+' Demo '+o+' '+type+' Value')})).filter(x=>x.n&&x.v>0);
+      const d={male,female,ages,cities:locs('City'),states:locs('State'),countries:locs('Country')};
+      return (male+female>0||ages.some(a=>a>0)) ? d : null;
+    }
+
+    pendingImport=[];
+    const seen=new Set();
+    rows.slice(1).forEach(r=>{
+      if(!r.length||r.length<3) return;
+      const nick=(r[iNick]||'').trim(), nome=(r[iName]||'').trim();
+      const key=nick||nome; if(!key||seen.has(key)) return; seen.add(key);
+      const segIG=parseFloat(r[iSegIG])||0;
+      const erReel=parseFloat(r[iErReel])||parseFloat(r[iErIG])||0;
+      const segTT=parseFloat(r[iSegTT])||0;
+      const erTT=parseFloat(r[iErTT])||0;
+      const segYT=iSegYT>=0?(parseFloat(r[iSegYT])||0):0;
+      pendingImport.push({
+        nome: nick?'@'+nick:nome,
+        segIG: segIG>0?String(segIG):'',
+        engReels: (segIG>0&&erReel>0)?String(Math.round(segIG*erReel)):'',
+        segTT: segTT>0?String(segTT):'',
+        engTT: (segTT>0&&erTT>0)?String(Math.round(Math.min(erTT,0.2)*segTT)):'',
+        segYT: segYT>0?String(segYT):'',
+        useIG: segIG>0, useTT: segTT>0, useYT: segYT>0,
+        demoIG: segIG>0?demoFrom('Instagram',r):null,
+        demoTT: segTT>0?demoFrom('TikTok',r):null,
+        demoYT: segYT>0?demoFrom('YouTube',r):null
+      });
+    });
+    if(!pendingImport.length){alert('Não consegui ler nenhum influ dessa planilha 🤔');return;}
+    document.getElementById('impCount').textContent=pendingImport.length;
+    document.getElementById('importModal').style.display='flex';
+  };
+  reader.readAsText(file);
+  inp.value='';
+}
+
+function confirmImport(){
+  const scReels=document.getElementById('scReels').value.trim();
+  const scTT=document.getElementById('scTT').value.trim();
+  const scTelas=document.getElementById('scTelas').value.trim();
+  const scPP=document.getElementById('scPP').value.trim();
+  const scDedic=document.getElementById('scDedic').value.trim();
+  const scShorts=document.getElementById('scShorts').value.trim();
+  // remove card vazio inicial
+  influs = influs.filter(i=>{
+    return KEYS.some(k=>k!=='nome'&&i[k]) || (i.nome&&i.nome.trim());
+  });
+  pendingImport.forEach(p=>{
+    const d={...p};
+    if(d.useIG){ d.qtdReels=scReels; d.qtdTelas=scTelas; d.qtdPP=scPP; }
+    if(d.useTT){ d.qtdTT=scTT; }
+    if(d.useYT){ d.qtdDedic=scDedic; d.qtdShorts=scShorts; }
+    const id=nextId++;
+    influs.push({id, collapsed:true, ...d});
+    if(scn()) scn().ids.push(id);
+  });
+  document.getElementById('importModal').style.display='none';
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== público do squad (demografia agregada, ponderada por seguidores) =====
+const AGE_LABELS=['13–17','18–24','25–34','35–44','45–54','55–64','65+'];
+const GEN={'13–17':'Gen Z','18–24':'Gen Z','25–34':'millennials','35–44':'millennials/Gen X','45–54':'Gen X','55–64':'boomers','65+':'boomers'};
+
+function renderAudience(){
+  const el=document.getElementById('audience');
+  if(!el) return;
+  let w=0, male=0, female=0, gw=0;
+  const ages=[0,0,0,0,0,0,0]; let aw=0;
+  const cityMap={}, stateMap={};
+  let comData=0;
+
+  influs.filter(i=>scnHas(i.id)).forEach(i=>{
+    let has=false;
+    [[i.demoIG, parseNum(i.segIG)],[i.demoTT, parseNum(i.segTT)],[i.demoYT, parseNum(i.segYT)]].forEach(([d,seg])=>{
+      if(!d||seg<=0) return;
+      has=true; w+=seg;
+      if(d.male+d.female>0){ male+=d.male*seg; female+=d.female*seg; gw+=seg; }
+      if(d.ages.some(a=>a>0)){ d.ages.forEach((a,ix)=>ages[ix]+=a*seg); aw+=seg; }
+      d.cities.forEach(c=>cityMap[c.n]=(cityMap[c.n]||0)+c.v*seg);
+      d.states.forEach(s=>stateMap[s.n]=(stateMap[s.n]||0)+s.v*seg);
+    });
+    if(has) comData++;
+  });
+
+  if(w<=0||comData===0){ el.style.display='none'; return; }
+  el.style.display='block';
+
+  const fPct=v=>v.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+  const malePct=gw>0?male/gw:0, femalePct=gw>0?female/gw:0;
+  const agesPct=ages.map(a=>aw>0?a/aw:0);
+  const topAgeIx=agesPct.indexOf(Math.max(...agesPct));
+  const topLocs=map=>Object.entries(map).map(([n,v])=>({n:n.replace(/, Brazil$/,''),v:v/w})).sort((a,b)=>b.v-a.v).slice(0,5);
+  const cities=topLocs(cityMap), states=topLocs(stateMap);
+  const maxAge=Math.max(...agesPct,1);
+  const maxCity=cities.length?cities[0].v:1;
+
+  // frase pronta pro cliente
+  const genero = femalePct>=malePct ? `feminino (${fPct(femalePct)})` : `masculino (${fPct(malePct)})`;
+  const frase = `Esse squad fala com um público majoritariamente <b>${genero}</b>, concentrado na faixa de <b>${AGE_LABELS[topAgeIx]} anos (${fPct(agesPct[topAgeIx])})</b>${states.length?`, com presença forte em <b>${states.slice(0,2).map(s=>s.n).join(' e ')}</b>`:''}.`;
+
+  el.innerHTML=`
+    <h2>👥 Público do squad</h2>
+    <div class="src">Demografia agregada de ${comData} influ${comData===1?'':'s'} (dados do Sprout), ponderada pelos seguidores de cada um — quem tem mais seguidores pesa mais.</div>
+    <div class="headline">💬 ${frase}</div>
+    <div class="cols2">
+      ${gw>0?`<div>
+        <h5>Gênero</h5>
+        <div class="gsplit">
+          <div class="gf" style="width:${Math.max(femalePct,8)}%">♀ ${fPct(femalePct)}</div>
+          <div class="gm" style="width:${Math.max(malePct,8)}%">♂ ${fPct(malePct)}</div>
+        </div>
+      </div>`:''}
+      ${aw>0?`<div>
+        <h5>Faixa etária</h5>
+        ${agesPct.map((a,ix)=>`<div class="bar"><span class="lbl">${AGE_LABELS[ix]}</span><div class="track"><div class="fill" style="width:${a/maxAge*100}%"></div></div><span class="pct">${fPct(a)}</span></div>`).join('')}
+      </div>`:''}
+      ${states.length?`<div>
+        <h5>Top estados</h5>
+        ${states.map(s=>`<div class="bar"><span class="lbl" title="${s.n}">${s.n}</span><div class="track"><div class="fill" style="width:${s.v/states[0].v*100}%"></div></div><span class="pct">${fPct(s.v)}</span></div>`).join('')}
+      </div>`:''}
+      ${cities.length?`<div>
+        <h5>Top cidades</h5>
+        ${cities.map(c=>`<div class="bar"><span class="lbl" title="${c.n}">${c.n.split(',')[0]}</span><div class="track"><div class="fill" style="width:${c.v/maxCity*100}%"></div></div><span class="pct">${fPct(c.v)}</span></div>`).join('')}
+      </div>`:''}
+    </div>`;
+}
+
+// ===== comparativo de cenários =====
+function aggregateDemo(list){
+  let w=0,male=0,female=0,gw=0,aw=0,comData=0;
+  const ages=[0,0,0,0,0,0,0]; const stateMap={};
+  list.forEach(i=>{
+    let has=false;
+    [[i.demoIG,parseNum(i.segIG)],[i.demoTT,parseNum(i.segTT)],[i.demoYT,parseNum(i.segYT)]].forEach(([d,seg])=>{
+      if(!d||seg<=0) return; has=true; w+=seg;
+      if(d.male+d.female>0){male+=d.male*seg;female+=d.female*seg;gw+=seg;}
+      if(d.ages.some(a=>a>0)){d.ages.forEach((a,ix)=>ages[ix]+=a*seg);aw+=seg;}
+      d.states.forEach(s=>stateMap[s.n]=(stateMap[s.n]||0)+s.v*seg);
+    });
+    if(has) comData++;
+  });
+  if(w<=0||comData===0) return null;
+  const malePct=gw>0?male/gw:0, femalePct=gw>0?female/gw:0;
+  const agesPct=ages.map(a=>aw>0?a/aw:0);
+  const topAgeIx=agesPct.indexOf(Math.max(...agesPct));
+  const states=Object.entries(stateMap).map(([n,v])=>({n:n.replace(/, Brazil$/,''),v:v/w})).sort((a,b)=>b.v-a.v).slice(0,5);
+  return {malePct,femalePct,agesPct,topAgeIx,states};
+}
+function computeTotals(ids){
+  let imp=0,eng=0,orc=0,cliq=0,n=0;
+  influs.forEach(i=>{ if(ids.indexOf(i.id)<0) return; const c=calc(i); n++; imp+=c.impTotal||0; eng+=c.engTotal||0; orc+=c.orc||0; cliq+=c.cliques||0; });
+  const txEng=imp>0?eng/imp:NaN, cpm=(orc>0&&imp>0)?orc/imp*1000:NaN, cpe=(orc>0&&eng>0)?orc/eng:NaN;
+  return {n,imp,eng,orc,cliq,txEng,cpm,cpe};
+}
+function renderCompare(){
+  const el=document.getElementById('compare'); if(!el) return;
+  if(scenarios.length<2){ el.style.display='none'; return; }
+  el.style.display='block';
+  const P=v=>Math.round(v)+'%';
+  const data=scenarios.map(s=>{
+    const ids=s.ids.filter(id=>influs.some(i=>i.id===id));
+    return {name:s.name, t:computeTotals(ids), aud:aggregateDemo(influs.filter(i=>ids.indexOf(i.id)>=0))};
+  });
+  const best=(key,dir)=>{ let bi=-1,bv=dir>0?-Infinity:Infinity; data.forEach((d,ix)=>{const v=d.t[key]; if(!isFinite(v))return; if(dir>0?v>bv:v<bv){bv=v;bi=ix;}}); return bi; };
+  const bImp=best('imp',1),bEng=best('eng',1),bTx=best('txEng',1),bCpm=best('cpm',-1),bCpe=best('cpe',-1),bCliq=best('cliq',1);
+  const pub=aud=>{ if(!aud) return '—'; const g=aud.femalePct>=aud.malePct?P(aud.femalePct)+' fem':P(aud.malePct)+' masc'; const age=AGE_LABELS[aud.topAgeIx]; const gen=GEN[age]||''; const st=aud.states.slice(0,2).map(s=>s.n).join(', '); return `${g}<br>${age}${gen?' ('+gen+')':''}${st?'<br>'+st:''}`; };
+  const cols=data.map(d=>`<th>${(d.name||'').replace(/</g,'&lt;')}<br><span style="font-weight:600;opacity:.8">${d.t.n} influ${d.t.n===1?'':'s'}</span></th>`).join('');
+  const row=(label,fn,bestIx)=>`<tr><td class="metric">${label}</td>${data.map((d,ix)=>`<td class="${ix===bestIx?'best':''}">${fn(d)}</td>`).join('')}</tr>`;
+  el.innerHTML=`
+    <h2>⚖️ Comparativo de cenários</h2>
+    <table>
+      <thead><tr><th>Métrica</th>${cols}</tr></thead>
+      <tbody>
+        ${row('💰 Custo',d=>d.t.orc>0?fmtR$(d.t.orc):'—',-1)}
+        ${row('👁 Impactos',d=>fmtShort(d.t.imp),bImp)}
+        ${row('❤️ Engajamentos',d=>fmtShort(d.t.eng),bEng)}
+        ${row('📊 Tx engajamento',d=>fmtPct(d.t.txEng),bTx)}
+        ${row('📉 CPM',d=>isFinite(d.t.cpm)?fmtR$(d.t.cpm):'—',bCpm)}
+        ${row('📉 CPE',d=>isFinite(d.t.cpe)?fmtR$(d.t.cpe):'—',bCpe)}
+        ${row('🔗 Cliques est.',d=>fmt(d.t.cliq),bCliq)}
+        <tr><td class="metric">👥 Público</td>${data.map(d=>`<td class="pub">${pub(d.aud)}</td>`).join('')}</tr>
+      </tbody>
+    </table>
+    ${bImp>=0?`<div class="read">💡 <b>Leitura rápida:</b> maior alcance é o <b>${data[bImp].name}</b> (${fmtShort(data[bImp].t.imp)} impactos)${bCpm>=0?`; mais eficiente em mídia é o <b>${data[bCpm].name}</b> (menor CPM, ${fmtR$(data[bCpm].t.cpm)})`:''}${bTx>=0?`; maior engajamento é o <b>${data[bTx].name}</b> (${fmtPct(data[bTx].t.txEng)})`:''}.</div>`:''}`;
+}
+
+addInflu();
+</script>
+</body>
+</html>

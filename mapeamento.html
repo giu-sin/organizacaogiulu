@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publination — Preenchedor de Mapeamento</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+  :root{
+    --cream:#FBF3CD; --black:#161514; --card:#fffdf2; --border:#16151422;
+    --muted:#6b675a; --pill:#16151410; --good:#1d7a4f; --warn:#b3261e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+  body{background:var(--cream);color:var(--black);padding:20px;font-size:14.5px}
+  .wrap{max-width:1600px;margin:0 auto}
+  .topnav{display:flex;align-items:center;gap:14px;padding:10px 20px;margin:-20px -20px 18px;background:var(--black);flex-wrap:wrap}
+  .topnav .brand{font-size:19px;letter-spacing:-.5px;text-decoration:none;color:var(--cream)}
+  .topnav .brand b{font-weight:900}.topnav .brand i{font-weight:600;font-style:italic}
+  .topnav .sp{flex:1}
+  .topnav a.lnk{text-decoration:none;color:var(--cream);font-weight:800;font-size:13px;padding:7px 14px;border-radius:30px;opacity:.75}
+  .topnav a.lnk:hover{opacity:1;background:#fbf3cd22}
+  .topnav a.lnk.active{background:var(--cream);color:var(--black);opacity:1}
+
+  .logo{font-size:34px;letter-spacing:-1px;user-select:none;margin-bottom:2px}
+  .logo b{font-weight:900}
+  .logo i{font-weight:600;font-style:italic}
+  .sub{color:var(--muted);margin-bottom:18px;font-size:14px;max-width:820px;line-height:1.5}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;position:sticky;top:0;background:var(--cream);padding:10px 0;z-index:20}
+  button{background:var(--black);color:var(--cream);border:none;border-radius:30px;padding:12px 20px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .1s}
+  button:hover{transform:scale(1.03)}
+  button:disabled{opacity:.35;cursor:not-allowed;transform:none}
+  button.ghost{background:transparent;color:var(--black);border:2px solid var(--black)}
+  button.danger{background:transparent;color:var(--warn);border:none;font-size:13px;font-weight:700;padding:6px 10px}
+
+  .redes{background:var(--card);border:2px solid var(--black);border-radius:14px;padding:12px 16px;margin-bottom:14px;box-shadow:3px 3px 0 var(--black)}
+  .redes h3{font-size:13px;font-weight:900;margin-bottom:3px}
+  .redes p{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:flex;align-items:center;gap:6px;background:var(--pill);border:2px solid transparent;border-radius:30px;padding:6px 14px;cursor:pointer;font-weight:800;font-size:12.5px;user-select:none}
+  .chip.on{background:var(--black);color:var(--cream)}
+  .chip .badge{font-size:10.5px;font-weight:800;background:#16151420;border-radius:20px;padding:1px 7px}
+  .chip.on .badge{background:#fbf3cd33}
+  .chip.zero{opacity:.5}
+
+  .banner{background:var(--card);border:2px dashed var(--black);border-radius:14px;padding:22px;text-align:center;color:var(--muted);margin-bottom:18px;box-shadow:3px 3px 0 var(--black)}
+  .banner b{color:var(--black)}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px;align-items:center}
+  .legend .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .dot.auto{background:#d9f0e3;border:1px solid var(--good)}
+  .dot.manual{background:#fff0ef;border:1px solid var(--warn)}
+
+  .tablebox{overflow:auto;border:2px solid var(--black);border-radius:14px;box-shadow:3px 3px 0 var(--black);background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  thead th{background:var(--black);color:var(--cream);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:8px;text-align:left;position:sticky;top:0;white-space:nowrap}
+  thead th .manualtag{display:block;font-size:8.5px;font-weight:700;color:#ffd9a0;letter-spacing:.5px}
+  thead th .autotag{display:block;font-size:8.5px;font-weight:700;color:#9be3bf;letter-spacing:.5px}
+  thead th .opttag{display:block;font-size:8.5px;font-weight:700;color:#cfc9b5;letter-spacing:.5px}
+  tbody td{border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:3px;vertical-align:top}
+  tbody tr:hover{background:#16151406}
+  td.num{text-align:center;font-weight:900;color:var(--muted);font-size:11px;width:26px}
+  .auto-cell{background:#eef9f2}
+  .manual-cell{background:#fff5f4}
+  input.cell,select.cell,textarea.cell{width:100%;border:1.5px solid transparent;background:transparent;border-radius:6px;padding:5px 6px;font-size:12.5px;color:var(--black);font-family:inherit;resize:vertical}
+  input.cell:focus,select.cell,textarea.cell:focus{outline:none;border-color:var(--black);background:#fff}
+  textarea.cell{min-height:34px;line-height:1.35}
+  .w-clu{min-width:120px} .w-nome{min-width:150px} .w-url{min-width:170px}
+  .w-seg{min-width:80px} .w-eng{min-width:78px} .w-pub{min-width:150px}
+  .w-def{min-width:260px} .w-div{min-width:110px} .w-apr{min-width:120px} .w-obs{min-width:160px}
+
+  .footnote{font-size:11.5px;color:var(--muted);margin:14px 0 4px;line-height:1.55}
+  .alertbox{border-radius:10px;padding:10px 14px;margin:14px 0;font-size:13px;background:#ffb45422;border:1px solid #ffb454}
+  .alertbox.warn{background:#ffe0de;border-color:var(--warn)}
+  .alertbox.ok{background:#d9f0e3;border-color:var(--good)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--good);color:#fff;padding:12px 22px;border-radius:30px;font-weight:800;font-size:14px;box-shadow:3px 3px 0 #16151455;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60}
+  .toast.show{opacity:1}
+  .count{font-weight:800}
+  td.selcell{text-align:center;width:30px}
+  td.selcell input{width:16px;height:16px;cursor:pointer;accent-color:var(--black)}
+
+  .scenario{background:var(--black);color:var(--cream);border-radius:18px;padding:22px;margin:22px 0;box-shadow:4px 4px 0 #16151455}
+  .scenario h2{font-size:17px;font-weight:900;margin-bottom:4px}
+  .scenario .headline{background:#fbf3cd1c;border:1px dashed #fbf3cd55;border-radius:12px;padding:13px 16px;font-size:14.5px;line-height:1.55;margin:12px 0 16px}
+  .scenario .kpis{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:18px}
+  .scenario .kpi .v{font-size:19px;font-weight:900}
+  .scenario .kpi .l{font-size:9.5px;opacity:.75;text-transform:uppercase;letter-spacing:.5px}
+  .scenario .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px 26px}
+  .scenario h5{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:8px}
+  .bar{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+  .bar .lbl{width:80px;flex-shrink:0;font-weight:700;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .track{flex:1;background:#fbf3cd22;border-radius:20px;height:10px;overflow:hidden}
+  .bar .fill{background:var(--cream);height:100%;border-radius:20px;min-width:2px}
+  .bar .pct{width:42px;text-align:right;font-weight:800;font-size:10.5px}
+  .scenario .copybtn{margin-top:18px;background:var(--cream);color:var(--black)}
+  .scenario .empty{opacity:.75;font-size:13.5px}
+
+  .scntabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .scntab{display:flex;align-items:center;gap:7px;background:var(--card);border:2px solid var(--black);border-radius:30px;padding:7px 14px;cursor:pointer;font-weight:800;font-size:13px}
+  .scntab.on{background:var(--black);color:var(--cream)}
+  .scntab .cnt{font-size:10.5px;background:#16151420;border-radius:20px;padding:1px 7px}
+  .scntab.on .cnt{background:#fbf3cd33}
+  .scntab .x{opacity:.55;font-size:11px;margin-left:2px}
+  .scntab .x:hover{opacity:1;color:#b3261e}
+  .scntab.add{border-style:dashed;font-weight:700;background:transparent}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a class="brand" href="index.html"><b>PUBLI</b><i>NATION</i></a>
+  <span class="sp"></span>
+  <a class="lnk" href="estimativas.html">📊 Estimativas</a>
+  <a class="lnk active" href="mapeamento.html">🗺️ Mapeamento</a>
+  <a class="lnk" href="ugc.html">👥 UGC</a>
+</div>
+<div class="wrap">
+  <div class="logo"><b>PUBLI</b><i>NATION</i></div>
+  <p class="sub">Preenchedor automático de <b>Mapeamento</b> ✨ Sobe a planilha de creators da Sprout (CSV) que eu preencho tudo que dá. Só sobra <b>Cluster</b> e <b>Defesa</b> (e os campos do HUB) pra você revisar.</p>
+
+  <div class="toolbar">
+    <button class="ghost" onclick="document.getElementById('csvfile').click()">📥 Importar do Sprout (CSV)</button>
+    <button id="btnCopy" onclick="copyForSheet(false)" disabled>📋 Copiar pra colar na planilha</button>
+    <button id="btnCopyHead" class="ghost" onclick="copyForSheet(true)" disabled>📋 Copiar com cabeçalho</button>
+    <button id="btnXlsx" onclick="downloadXLSX()" disabled>⬇ Baixar Excel (.xlsx)</button>
+    <button id="btnCsv" class="ghost" onclick="downloadCSV()" disabled>⬇ CSV</button>
+    <button id="btnSort" class="ghost" onclick="sortByCluster()" disabled>↕ Agrupar por cluster</button>
+    <button id="btnClear" class="danger" onclick="clearAll()" disabled>✕ Limpar tudo</button>
+    <input type="file" id="csvfile" accept=".csv" style="display:none" onchange="loadCSV(this)">
+  </div>
+
+  <div class="redes">
+    <h3>📡 Quais redes seguir?</h3>
+    <p>Marca as redes que entram no mapeamento. O número mostra quantos influs têm cada rede na planilha importada. IG + TikTok já vêm marcados (igual à planilha nacional).</p>
+    <div class="chips" id="redeChips"></div>
+    <h3 style="margin-top:14px">📊 Dados estratégicos (colunas extras)</h3>
+    <p>Colunas a mais pra defesa/estratégia. Deixe ligadas pro Excel; <b>desligue antes de colar na planilha nacional</b> (ela não tem essas colunas).</p>
+    <div class="chips" id="extraChips"></div>
+  </div>
+
+  <div class="banner" id="banner">
+    📥 <b>Comece importando o CSV da Sprout.</b><br>
+    Eu monto a tabela do Mapeamento já preenchida — aí é só copiar e colar na aba <b>Mapeamento</b> da planilha nacional, ou baixar o Excel pronto.
+  </div>
+
+  <div id="legend" class="legend" style="display:none">
+    <span><span class="dot auto"></span>Preenchido automático (Sprout)</span>
+    <span><span class="dot manual"></span>Você preenche / revisa</span>
+    <span style="margin-left:auto">Influs importados: <span class="count" id="cnt">0</span></span>
+  </div>
+
+  <div id="alert"></div>
+
+  <div class="tablebox" id="tablebox" style="display:none">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footnote" id="footnote" style="display:none">
+    💡 <b>Como colar na planilha:</b> clica em <b>“Copiar pra colar na planilha”</b>, abre a aba <b>Mapeamento</b>, clica na célula <b>A2</b> e cola (Ctrl+V / Cmd+V).<br>
+    ⚠️ A <b>taxa de engajamento do TikTok</b> vem direto do Sprout (costuma vir alta, calculada por views) — confere antes de mandar pro cliente. <b>Faixa etária, Praças e Gênero</b> vêm do público do Instagram (3 maiores de cada).
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<datalist id="clusters"><option value="ADVENTO"><option value="EMOCIONAR"><option value="PR STUNT"><option value="TREND"><option value="PRESENTEAR"></datalist>
+<datalist id="diversidades"><option value="Raça"><option value="LGBTQIA+"><option value="Midsize"><option value="PCD"><option value="50+"></datalist>
+
+<script>
+// ---------- config de redes ----------
+const PLATFORMS=[
+  {key:'instagram',label:'Instagram',url:'Instagram URL',seg:'Instagram Followers',eng:'Instagram Engagement Rate'},
+  {key:'tiktok',  label:'TikTok',   url:'TikTok URL',   seg:'TikTok Followers',   eng:'TikTok Engagement Rate'},
+  {key:'youtube', label:'YouTube',  url:'YouTube URL',  seg:'YouTube Subscribers',eng:null},
+  {key:'twitter', label:'X / Twitter',url:'Twitter URL',seg:'Twitter Followers',  eng:'Twitter Engagement Rate'},
+  {key:'facebook',label:'Facebook', url:'Facebook URL', seg:'Facebook Followers', eng:'Facebook Engagement Rate'},
+  {key:'twitch',  label:'Twitch',   url:'Twitch URL',   seg:'Twitch Followers',   eng:null},
+];
+const PLABELS=PLATFORMS.map(p=>p.label);
+let selected={instagram:true,tiktok:true,youtube:false,twitter:false,facebook:false,twitch:false};
+// colunas estratégicas extras (opcionais)
+const EXTRAS=[
+  {key:'categoria',   label:'Categoria / nicho',  h:'Categoria',        w:'w-div'},
+  {key:'crescimento', label:'Crescimento 90d',     h:'Cresc. 90d', exph:'Crescimento 90d', pct:true, w:'w-eng'},
+  {key:'raca',        label:'Raça do público',     h:'Raça do público', w:'w-pub', wrap:true},
+];
+let extrasSel={categoria:true,crescimento:true,raca:true};
+let rows=[];        // {id,cluster,nome,plat:{...},extra:{...},idade,pracas,genero,_demo,defesa,...}
+let detected={};    // contagem por rede
+let nextId=1;
+
+// ---------- formatadores ----------
+function fmtSeg(n){ n=parseFloat(n)||0; if(n<=0)return'';
+  if(n>=1e6)return(n/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+'M';
+  if(n>=1e3)return(n/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1})+'K';
+  return Math.round(n).toString(); }
+function fmtPct(n){ n=parseFloat(n)||0; if(n<=0)return''; return(n*100).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%'; }
+function parsePct(s){ if(!s)return null; let t=String(s).replace('%','').trim().replace(/\./g,'').replace(',','.'); let v=parseFloat(t); return isFinite(v)?v/100:null; }
+
+// ---------- parser CSV ----------
+function parseCSVtext(text){
+  const out=[]; let row=[], cur='', inQ=false;
+  for(let c=0;c<text.length;c++){const ch=text[c];
+    if(inQ){ if(ch==='"'){ if(text[c+1]==='"'){cur+='"';c++;} else inQ=false; } else cur+=ch; }
+    else { if(ch==='"')inQ=true;
+      else if(ch===','){row.push(cur);cur='';}
+      else if(ch==='\n'||ch==='\r'){ if(cur!==''||row.length){row.push(cur);out.push(row);row=[];cur='';} if(ch==='\r'&&text[c+1]==='\n')c++; }
+      else cur+=ch; } }
+  if(cur!==''||row.length){row.push(cur);out.push(row);}
+  return out;
+}
+const AGE_KEYS=['13 To 17','18 To 24','25 To 34','35 To 44','45 To 54','55 To 64','65 And Over'];
+const AGE_LBL={'13 To 17':'13-17','18 To 24':'18-24','25 To 34':'25-34','35 To 44':'35-44','45 To 54':'45-54','55 To 64':'55-64','65 And Over':'65+'};
+const AGE_ORDER=['13-17','18-24','25-34','35-44','45-54','55-64','65+'];
+const GEN={'13-17':'Geração Z','18-24':'Geração Z (jovens)','25-34':'millennials','35-44':'millennials mais velhos / Geração X','45-54':'Geração X','55-64':'baby boomers','65+':'baby boomers'};
+const UF={'Acre':'AC','Alagoas':'AL','Amapá':'AP','Amazonas':'AM','Bahia':'BA','Ceará':'CE','Distrito Federal':'DF','Espírito Santo':'ES','Goiás':'GO','Maranhão':'MA','Mato Grosso':'MT','Mato Grosso do Sul':'MS','Minas Gerais':'MG','Pará':'PA','Paraíba':'PB','Paraná':'PR','Pernambuco':'PE','Piauí':'PI','Rio de Janeiro':'RJ','Rio Grande do Norte':'RN','Rio Grande do Sul':'RS','Rondônia':'RO','Roraima':'RR','Santa Catarina':'SC','São Paulo':'SP','Sergipe':'SE','Tocantins':'TO'};
+function ufAbbr(n){const b=String(n||'').replace(/,\s*Brazil$/i,'').trim();return UF[b]||b;}
+
+function loadCSV(inp){
+  const file=inp.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=parseCSVtext(e.target.result.replace(/^﻿/,''));
+    if(data.length<2){alert('Hmm, não achei dados nessa planilha 🤔');return;}
+    const head=data[0]; const col=n=>head.indexOf(n);
+    const iName=col('Name'), iProf=col('Profile ID');
+    if(col('Instagram Followers')<0 && col('TikTok Followers')<0){
+      alert('Essa planilha não parece ser a exportação de creators do Sprout — não achei as colunas de seguidores.');return;}
+
+    const val=(r,n)=>{const c=col(n);return c>=0?(r[c]||''):'';};
+    const numv=(r,n)=>parseFloat(val(r,n))||0;
+    const ORD=['Top','Second','Third','Fourth','Fifth'];
+    function publicoParts(r){
+      const idade=AGE_KEYS.map(a=>({l:AGE_LBL[a],v:numv(r,'Instagram Demo Age '+a)}))
+                      .filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,3)
+                      .map(x=>Math.round(x.v)+'% - '+x.l).join('\n');
+      const st=ORD.map(o=>({n:val(r,'Instagram Demo '+o+' State'),v:numv(r,'Instagram Demo '+o+' State Value')}))
+                  .filter(x=>x.n&&x.v>0).slice(0,3);
+      const pracas=st.map(s=>s.n.replace(/,\s*Brazil$/i,'').trim()+' '+Math.round(s.v)+'%').join(' · ');
+      const m=numv(r,'Instagram Demo Gender Male'), f=numv(r,'Instagram Demo Gender Female');
+      const genero=(m+f>0)?(Math.round(f)+'% F · '+Math.round(m)+'% M'):'';
+      return {idade,pracas,genero};
+    }
+
+    detected={}; PLATFORMS.forEach(p=>detected[p.key]=0);
+    const seen=new Set(); const imported=[];
+    data.slice(1).forEach(r=>{
+      if(!r.length||r.length<3)return;
+      const nome=(iName>=0?r[iName]:'').trim(); if(!nome)return;
+      const key=(iProf>=0?r[iProf]:'')||nome; if(seen.has(key))return; seen.add(key);
+      const plat={};
+      PLATFORMS.forEach(p=>{
+        const u=col(p.url), s=col(p.seg), e=p.eng?col(p.eng):-1;
+        const url=(u>=0?r[u]:'').trim();
+        const segN=s>=0?(parseFloat(r[s])||0):0;
+        const engN=e>=0?(parseFloat(r[e])||0):0;
+        plat[p.key]={url, seg:fmtSeg(segN), eng:p.eng?fmtPct(engN):''};
+        if(url||segN>0) detected[p.key]++;
+      });
+      // dados estratégicos extras
+      const cresc=numv(r,'Instagram Growth Rate (90 Days)');
+      const raca=[['Instagram Demo Race White','Brancos'],['Instagram Demo Race African American','Negros'],['Instagram Demo Race Hispanic','Pardos/Latinos'],['Instagram Demo Race Asian','Asiáticos']]
+        .map(([c,l])=>({l,v:numv(r,c)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).map(x=>x.l+' '+Math.round(x.v)+'%').join(' · ');
+      const extra={
+        categoria: val(r,'Category'),
+        crescimento: cresc!==0 ? (cresc*100).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%' : '',
+        raca
+      };
+      const pp=publicoParts(r);
+      // dados brutos pra agregação do cenário
+      const ages={}; AGE_KEYS.forEach(a=>{const v=numv(r,'Instagram Demo Age '+a); if(v>0) ages[AGE_LBL[a]]=v;});
+      const states=ORD.map(o=>({n:val(r,'Instagram Demo '+o+' State').replace(/,\s*Brazil$/i,'').trim(),v:numv(r,'Instagram Demo '+o+' State Value')})).filter(x=>x.n&&x.v>0);
+      const _demo={segNum:numv(r,'Instagram Followers'), total:numv(r,'Total Audience Size'), ages, states,
+                   male:numv(r,'Instagram Demo Gender Male'), female:numv(r,'Instagram Demo Gender Female')};
+      imported.push({id:nextId++,cluster:'',nome,plat,extra,idade:pp.idade,pracas:pp.pracas,genero:pp.genero,_demo,defesa:'',diversidade:'',aprovacao:'',obs:''});
+    });
+    if(!imported.length){alert('Não consegui ler nenhum influ dessa planilha 🤔');return;}
+    rows=imported;
+    renderRedes(); renderExtras(); render();
+    toast('Importei '+imported.length+' influs ✓');
+  };
+  reader.readAsText(file); inp.value='';
+}
+
+// ---------- redes (chips) ----------
+function renderRedes(){
+  document.getElementById('redeChips').innerHTML = PLATFORMS.map(p=>{
+    const c=detected[p.key];
+    const zero = (rows.length && !c) ? 'zero' : '';
+    const badge = rows.length ? `<span class="badge">${c||0}</span>` : '';
+    return `<div class="chip ${selected[p.key]?'on':''} ${zero}" onclick="toggleRede('${p.key}')">${selected[p.key]?'✓':'+'} ${p.label} ${badge}</div>`;
+  }).join('');
+}
+function toggleRede(k){ selected[k]=!selected[k]; renderRedes(); if(rows.length)render(); }
+function renderExtras(){
+  document.getElementById('extraChips').innerHTML = EXTRAS.map(x=>
+    `<div class="chip ${extrasSel[x.key]?'on':''}" onclick="toggleExtra('${x.key}')">${extrasSel[x.key]?'✓':'+'} ${x.label}</div>`).join('');
+}
+function toggleExtra(k){ extrasSel[k]=!extrasSel[k]; renderExtras(); if(rows.length)render(); }
+
+// ---------- colunas dinâmicas ----------
+function tableColumns(){
+  const cols=[
+    {key:'cluster',h:'Cluster',tag:'VOCÊ PREENCHE',cls:'manual',w:'w-clu',kind:'cluster'},
+    {key:'nome',   h:'Nome/IG',tag:'AUTO',cls:'auto',w:'w-nome',kind:'input'},
+  ];
+  PLATFORMS.forEach(p=>{ if(!selected[p.key])return;
+    cols.push({plat:p.key,sub:'url',h:p.label,tag:'AUTO',cls:'auto',w:'w-url',kind:'input'});
+    cols.push({plat:p.key,sub:'seg',h:'Seguidores',exph:'Seguidores',tag:'AUTO',cls:'auto',w:'w-seg',kind:'input'});
+    if(p.eng) cols.push({plat:p.key,sub:'eng',h:'Tx engaj.',exph:'Tx de engajamento',pct:true,tag:'AUTO',cls:'auto',w:'w-eng',kind:'input'});
+  });
+  cols.push({key:'idade', h:'Faixa etária',tag:'AUTO',cls:'auto',w:'w-pub',kind:'textarea',wrap:true});
+  cols.push({key:'pracas',h:'Praças',      tag:'AUTO',cls:'auto',w:'w-pub',kind:'textarea',wrap:true});
+  cols.push({key:'genero',h:'Gênero',      tag:'AUTO',cls:'auto',w:'w-seg',kind:'input'});
+  EXTRAS.forEach(x=>{ if(!extrasSel[x.key])return;
+    cols.push({extra:x.key,h:x.h,exph:x.exph||x.h,pct:x.pct,wrap:x.wrap,tag:'AUTO',cls:'auto',w:x.w,kind:x.wrap?'textarea':'input'}); });
+  cols.push({key:'defesa',h:'Defesa',tag:'VOCÊ PREENCHE',cls:'manual',w:'w-def',kind:'textarea',wrap:true});
+  cols.push({key:'diversidade',h:'Diversidade',tag:'OPCIONAL',cls:'manual',w:'w-div',kind:'diversidade'});
+  cols.push({key:'aprovacao',h:'Aprovação (HUB)',tag:'OPCIONAL',cls:'manual',w:'w-apr',kind:'select'});
+  cols.push({key:'obs',h:'Obs Hub',tag:'OPCIONAL',cls:'manual',w:'w-obs',kind:'textarea'});
+  return cols;
+}
+function getVal(r,c){ if(c.plat) return r.plat[c.plat]?.[c.sub]||''; if(c.extra) return r.extra?.[c.extra]||''; return r[c.key]||''; }
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ---------- render tabela ----------
+function render(){
+  const has=rows.length>0;
+  document.getElementById('banner').style.display=has?'none':'block';
+  document.getElementById('tablebox').style.display=has?'block':'none';
+  document.getElementById('legend').style.display=has?'flex':'none';
+  document.getElementById('footnote').style.display=has?'block':'none';
+  ['btnCopy','btnCopyHead','btnXlsx','btnCsv','btnSort','btnClear'].forEach(id=>document.getElementById(id).disabled=!has);
+  document.getElementById('cnt').textContent=rows.length;
+  if(!has){document.getElementById('alert').innerHTML='';return;}
+
+  const cols=tableColumns();
+  const tagClass=t=>t==='AUTO'?'autotag':(t==='OPCIONAL'?'opttag':'manualtag');
+  document.getElementById('thead').innerHTML='<th>#</th>'+cols.map(c=>`<th>${c.h}<span class="${tagClass(c.tag)}">${c.tag}</span></th>`).join('');
+
+  document.getElementById('tbody').innerHTML=rows.map((r,i)=>{
+    const tds=cols.map(c=>{
+      const v=esc(getVal(r,c));
+      const call=c.plat?`updP(${i},'${c.plat}','${c.sub}',this.value)`:(c.extra?`updX(${i},'${c.extra}',this.value)`:`updF(${i},'${c.key}',this.value)`);
+      let inner;
+      if(c.kind==='cluster') inner=`<input class="cell ${c.w}" list="clusters" value="${v}" placeholder="cluster" oninput="${call}">`;
+      else if(c.kind==='diversidade') inner=`<input class="cell ${c.w}" list="diversidades" value="${v}" oninput="${call}">`;
+      else if(c.kind==='select') inner=`<select class="cell ${c.w}" onchange="${call}">${['','Aprovado','Declinado','Em análise'].map(o=>`<option value="${o}" ${getVal(r,c)===o?'selected':''}>${o||'—'}</option>`).join('')}</select>`;
+      else if(c.kind==='textarea') inner=`<textarea class="cell ${c.w}" oninput="${call}">${v}</textarea>`;
+      else inner=`<input class="cell ${c.w}" value="${v}" oninput="${call}">`;
+      return `<td class="${c.cls}-cell">${inner}</td>`;
+    }).join('');
+    return `<tr><td class="num">${i+1}</td>${tds}</tr>`;
+  }).join('');
+  updateAlert();
+}
+
+function updF(i,k,v){ rows[i][k]=v; if(k==='cluster'||k==='defesa')updateAlert(); }
+function updP(i,key,sub,v){ if(!rows[i].plat[key])rows[i].plat[key]={url:'',seg:'',eng:''}; rows[i].plat[key][sub]=v; }
+function updX(i,key,v){ if(!rows[i].extra)rows[i].extra={}; rows[i].extra[key]=v; }
+
+function updateAlert(){
+  const box=document.getElementById('alert');
+  const faltam=rows.filter(r=>!r.cluster.trim()||!r.defesa.trim()).length;
+  const extra=Object.keys(selected).filter(k=>selected[k]&&k!=='instagram'&&k!=='tiktok');
+  const semBase=!selected.instagram||!selected.tiktok;
+  const anyExtra=Object.values(extrasSel).some(v=>v);
+  let html='';
+  if(faltam>0) html+=`<div class="alertbox">✏️ <b>${faltam} influ${faltam===1?'':'s'}</b> ainda sem <b>Cluster</b> e/ou <b>Defesa</b> — complete antes de mandar pro cliente.</div>`;
+  else if(rows.length) html+=`<div class="alertbox ok">✅ Cluster e Defesa preenchidos em todo mundo!</div>`;
+  if(extra.length||semBase||anyExtra) html+=`<div class="alertbox warn">⚠️ Você tem colunas além de IG + TikTok ligadas (redes e/ou dados estratégicos). A planilha <b>nacional original</b> só tem as colunas padrão — pra <b>colar lá</b>, deixe só IG + TikTok e desligue os dados estratégicos. Com tudo ligado, use o <b>Baixar Excel</b>.</div>`;
+  box.innerHTML=html;
+}
+
+function sortByCluster(){
+  rows.sort((a,b)=>(a.cluster||'~~~').localeCompare(b.cluster||'~~~','pt-BR')||a.nome.localeCompare(b.nome,'pt-BR'));
+  render(); toast('Agrupado por cluster ✓');
+}
+function clearAll(){ if(confirm('Limpar tudo e começar de novo?')){ rows=[]; detected={}; renderRedes(); render(); } }
+
+// ---------- export ----------
+function tsvCell(v){ v=String(v==null?'':v); return /[\t\n"]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function buildTSV(withHead){
+  const cols=tableColumns();
+  const lines=rows.map(r=>cols.map(c=>tsvCell(getVal(r,c))).join('\t'));
+  if(withHead) lines.unshift(cols.map(c=>c.exph||c.h).join('\t'));
+  return lines.join('\n');
+}
+function copyForSheet(withHead){
+  const tsv=buildTSV(withHead);
+  navigator.clipboard.writeText(tsv).then(
+    ()=>toast(withHead?'Copiado com cabeçalho ✓ cola na A1':'Copiado ✓ cola na célula A2'),
+    ()=>{const ta=document.createElement('textarea');ta.value=tsv;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Copiado ✓');});
+}
+function downloadCSV(){
+  const cols=tableColumns();
+  const csv='﻿'+[cols.map(c=>c.exph||c.h),...rows.map(r=>cols.map(c=>getVal(r,c)))]
+    .map(line=>line.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='mapeamento_preenchido.csv'; a.click();
+}
+
+function widthFor(h){
+  if(h==='Cluster')return 15.4; if(h==='Nome/IG')return 18;
+  if(h==='Seguidores')return 11.5; if(h==='Tx de engajamento')return 14;
+  if(h==='Faixa etária')return 14; if(h==='Praças')return 30; if(h==='Gênero')return 13;
+  if(h==='Defesa')return 47;
+  if(h==='Diversidade')return 11.5; if(h==='Aprovação (HUB)')return 18; if(h==='Obs Hub')return 27;
+  if(PLABELS.includes(h))return 45;
+  return 16;
+}
+function borderAll(){const s={style:'thin',color:{argb:'FFD9D9D9'}};return{top:s,left:s,right:s,bottom:s};}
+
+async function downloadXLSX(){
+  if(typeof ExcelJS==='undefined'){alert('A biblioteca de Excel não carregou (precisa de internet pra primeira vez). Use o "CSV" como alternativa.');return;}
+  const cols=tableColumns();
+  const wb=new ExcelJS.Workbook();
+  const ws=wb.addWorksheet('Mapeamento',{views:[{state:'frozen',ySplit:1}]});
+  ws.columns=cols.map(c=>({width:widthFor(c.exph||c.h)}));
+  const hr=ws.addRow(cols.map(c=>c.exph||c.h));
+  hr.height=20;
+  hr.eachCell(c=>{c.font={name:'Poppins',bold:true,size:10};c.alignment={horizontal:'center',vertical:'center',wrapText:true};c.border=borderAll();});
+  rows.forEach(r=>{
+    const vals=cols.map(c=> c.pct ? parsePct(getVal(r,c)) : getVal(r,c));
+    const xr=ws.addRow(vals);
+    xr.eachCell({includeEmpty:true},(cell,n)=>{
+      const c=cols[n-1]; if(!c)return;
+      cell.font={name:'Poppins',size:10};
+      cell.alignment={vertical:'top',wrapText:!!c.wrap};
+      if(c.pct) cell.numFmt='0.00%';
+      cell.border=borderAll();
+    });
+  });
+  const buf=await wb.xlsx.writeBuffer();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download='mapeamento_preenchido.xlsx'; a.click();
+  toast('Excel baixado ✓');
+}
+
+// ---------- toast ----------
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+
+renderRedes(); renderExtras();
+</script>
+</body>
+</html>

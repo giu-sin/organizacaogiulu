@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>PubliNation · Estúdio de GIF</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23DB1150'/%3E%3Cstop offset='.5' stop-color='%23E9644F'/%3E%3Cstop offset='1' stop-color='%23FBCB4E'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='45' font-family='Arial Black,Arial' font-size='36' font-style='italic' font-weight='900' text-anchor='middle' fill='%231D1E1C'%3EP%3C/text%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   PUBLINATION — Estúdio de GIF (uso interno)
+   Paleta oficial extraída da identidade visual (Drive):
+   --ink   #141513  fundo
+   --panel #1D1E1C  cartões (cor de fundo da marca)
+   --cream #FFF8CF  texto/wordmark
+   gradiente assinatura: #DB1150 → #E9644F → #FBCB4E
+   ============================================================ */
+:root{
+  --ink:#141513;
+  --panel:#1D1E1C;
+  --panel2:#242623;
+  --line:#3A3C35;
+  --cream:#FFF8CF;
+  --muted:#A9A78F;
+  --g1:#DB1150;
+  --g2:#E9644F;
+  --g3:#FBCB4E;
+  --grad:linear-gradient(90deg,var(--g1),var(--g2),var(--g3));
+  --ok:#8FD98A;
+  --err:#FF5470;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);
+  color:var(--cream);
+  font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+}
+main{width:min(1060px,94vw);margin:0 auto;flex:1}
+
+/* ---------- header ---------- */
+header{width:min(1060px,94vw);margin:0 auto;padding:34px 0 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.wordmark{line-height:.95;user-select:none}
+.wordmark .l1{font-style:italic;font-weight:900;font-size:clamp(30px,4.4vw,44px);letter-spacing:-.5px}
+.wordmark .l2{font-style:italic;font-weight:300;font-size:clamp(30px,4.4vw,44px);letter-spacing:1px;margin-left:2px}
+.tagline{
+  margin-top:8px;font-weight:800;font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.badge{
+  border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted);white-space:nowrap;margin-bottom:6px;
+}
+.badge b{color:var(--cream)}
+
+/* ---------- dropzone ---------- */
+#dropzone{
+  margin-top:22px;border:2px dashed var(--line);border-radius:var(--radius);
+  background:var(--panel);padding:44px 24px;text-align:center;cursor:pointer;
+  transition:border-color .15s, box-shadow .15s, transform .1s;
+}
+#dropzone:hover{border-color:var(--g2)}
+#dropzone.drag{border-color:var(--g1);box-shadow:0 0 0 4px rgba(219,17,80,.18);transform:scale(1.003)}
+#dropzone .dz-ico{font-size:34px;margin-bottom:10px}
+#dropzone h2{margin:0 0 6px;font-size:20px;font-weight:800}
+#dropzone p{margin:0;color:var(--muted);font-size:13.5px}
+#dropzone.compact{padding:14px 18px;display:flex;align-items:center;justify-content:center;gap:12px}
+#dropzone.compact .dz-ico{font-size:20px;margin:0}
+#dropzone.compact h2{font-size:14.5px;margin:0}
+#dropzone.compact p{display:none}
+.hidden{display:none!important}
+
+/* ---------- cards / sections ---------- */
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+h3.sec{margin:0 0 14px;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+h3.sec b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- editor ---------- */
+.ed-grid{display:grid;grid-template-columns:1.25fr .95fr;gap:22px}
+@media(max-width:880px){.ed-grid{grid-template-columns:1fr}}
+video{width:100%;border-radius:12px;background:#000;max-height:380px;outline:none}
+.fileinfo{margin-top:10px;font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fileinfo .nm{color:var(--cream);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%}
+
+.trim{margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.trim label{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);margin:6px 0 2px}
+.trim label span{color:var(--cream);font-variant-numeric:tabular-nums;font-weight:700}
+.trim .mini{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;font-size:10.5px;padding:3px 8px;cursor:pointer}
+.trim .mini:hover{color:var(--cream);border-color:var(--g2)}
+input[type=range]{width:100%;appearance:none;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--grad);opacity:.9;cursor:pointer;margin:6px 0 10px}
+input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--cream);border:3px solid var(--panel);box-shadow:0 0 0 1.5px var(--g2)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--cream);border:3px solid var(--panel);box-shadow:0 0 0 1.5px var(--g2)}
+.trim-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.trim-meta b{color:var(--cream)}
+.warn{color:var(--g3);font-weight:700}
+
+/* ---------- settings ---------- */
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.set{display:flex;flex-direction:column;gap:5px}
+.set label{font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+select{
+  background:var(--panel2);color:var(--cream);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;font-size:14px;outline:none;cursor:pointer;width:100%;
+}
+select:focus{border-color:var(--g2)}
+#convertBtn{
+  margin-top:16px;width:100%;border:none;border-radius:12px;padding:15px;
+  background:var(--grad);color:var(--panel);font-size:16px;font-weight:900;font-style:italic;
+  letter-spacing:.5px;cursor:pointer;text-transform:uppercase;
+  transition:filter .15s, transform .05s;
+}
+#convertBtn:hover{filter:brightness(1.08)}
+#convertBtn:active{transform:scale(.99)}
+#convertBtn:disabled{filter:grayscale(.6) brightness(.7);cursor:wait}
+.ghost{
+  background:none;border:1px solid var(--line);color:var(--muted);border-radius:10px;
+  padding:8px 13px;font-size:12.5px;cursor:pointer;
+}
+.ghost:hover{color:var(--cream);border-color:var(--g2)}
+
+/* ---------- progress ---------- */
+#progWrap{margin-top:14px}
+.pbar{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.pbar>div{height:100%;width:0%;background:var(--grad);transition:width .15s}
+.ptxt{margin-top:7px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ---------- queue ---------- */
+#queueList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+#queueList li{
+  display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:12px;padding:10px 14px;font-size:13.5px;
+}
+#queueList .qname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+#queueList .qsize{color:var(--muted);font-size:12px;white-space:nowrap}
+#queueList .qstat{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+#queueList .qstat.ok{color:var(--ok)}
+#queueList .qstat.err{color:var(--err)}
+#convertAllBtn{margin-top:14px}
+
+/* ---------- results ---------- */
+#resultsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.result-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.result-card img{width:100%;display:block;background:#000;aspect-ratio:auto}
+.rc-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.rc-name{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-meta{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rc-row{display:flex;gap:8px}
+.dl{
+  flex:1;text-align:center;text-decoration:none;background:var(--grad);color:var(--panel);
+  font-weight:900;font-size:13px;border-radius:9px;padding:9px 10px;font-style:italic;text-transform:uppercase;letter-spacing:.4px;
+}
+.dl:hover{filter:brightness(1.08)}
+
+/* ---------- toast / footer ---------- */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--panel2);border:1px solid var(--g1);color:var(--cream);
+  padding:12px 18px;border-radius:12px;font-size:13.5px;opacity:0;pointer-events:none;
+  transition:opacity .2s, transform .2s;max-width:88vw;box-shadow:0 8px 30px rgba(0,0,0,.5);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{margin-top:34px}
+.foot-in{width:min(1060px,94vw);margin:0 auto;padding:0 0 18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.gradbar{height:8px;background:var(--grad);margin-top:14px}
+.privacy{display:flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="wordmark"><span class="l1">PUBLI</span><span class="l2">NATION</span></div>
+    <div class="tagline">Estúdio de GIF · Ecossistema de Influência</div>
+  </div>
+  <div class="badge"><b>Uso interno</b> · sem limites · sem marca d'água</div>
+</header>
+
+<main>
+  <!-- ======== UPLOAD ======== -->
+  <div id="dropzone">
+    <div class="dz-ico">🎬</div>
+    <h2>Arraste vídeos aqui <span style="color:var(--muted);font-weight:400">ou clique para escolher</span></h2>
+    <p>MP4 · MOV · WEBM · M4V — quantos quiser, do tamanho que quiser.<br>Tudo é processado <b>no seu navegador</b>: nada sai do seu computador.</p>
+    <input type="file" id="fileInput" accept="video/*,.mp4,.mov,.webm,.m4v,.mkv,.avi" multiple hidden>
+  </div>
+
+  <!-- ======== EDITOR ======== -->
+  <section class="card hidden" id="editor">
+    <h3 class="sec">Editar &amp; <b>converter</b> <button class="ghost" id="closeEditor" style="float:right;margin-top:-6px">✕ remover vídeo</button></h3>
+    <div class="ed-grid">
+      <div>
+        <video id="vid" controls playsinline muted preload="auto"></video>
+        <div class="fileinfo"><span class="nm" id="fiName">—</span><span id="fiMeta">—</span></div>
+        <div class="trim">
+          <label>Início <span style="display:flex;gap:8px;align-items:center"><button class="mini" id="setStart">usar posição do player</button><span id="startLbl">0:00,0</span></span></label>
+          <input type="range" id="startR" min="0" max="10" step="0.05" value="0">
+          <label>Fim <span style="display:flex;gap:8px;align-items:center"><button class="mini" id="setEnd">usar posição do player</button><span id="endLbl">0:00,0</span></span></label>
+          <input type="range" id="endR" min="0" max="10" step="0.05" value="10">
+          <div class="trim-meta" id="estimate">—</div>
+        </div>
+      </div>
+      <div>
+        <div class="set-grid">
+          <div class="set"><label for="fpsSel">Quadros/seg (FPS)</label>
+            <select id="fpsSel">
+              <option value="5">5 fps — mínimo</option>
+              <option value="10">10 fps — leve</option>
+              <option value="12">12 fps</option>
+              <option value="15" selected>15 fps — padrão</option>
+              <option value="20">20 fps — fluido</option>
+              <option value="25">25 fps</option>
+              <option value="30">30 fps — máximo</option>
+            </select></div>
+          <div class="set"><label for="widthSel">Largura</label>
+            <select id="widthSel">
+              <option value="240">240 px — mini</option>
+              <option value="320">320 px</option>
+              <option value="480" selected>480 px — padrão</option>
+              <option value="640">640 px</option>
+              <option value="800">800 px</option>
+              <option value="orig">Original</option>
+            </select></div>
+          <div class="set"><label for="qualSel">Qualidade de cor</label>
+            <select id="qualSel">
+              <option value="2">Alta — mais lenta</option>
+              <option value="10" selected>Boa — padrão</option>
+              <option value="20">Rápida — rascunho</option>
+            </select></div>
+          <div class="set"><label for="speedSel">Velocidade</label>
+            <select id="speedSel">
+              <option value="0.5">0,5× — câmera lenta</option>
+              <option value="1" selected>1× — normal</option>
+              <option value="1.5">1,5×</option>
+              <option value="2">2× — acelerado</option>
+            </select></div>
+          <div class="set"><label for="loopSel">Repetição (loop)</label>
+            <select id="loopSel">
+              <option value="inf" selected>Infinito — padrão</option>
+              <option value="1">Tocar 1 vez</option>
+              <option value="2">≈ 2 vezes</option>
+              <option value="3">≈ 3 vezes</option>
+              <option value="5">≈ 5 vezes</option>
+            </select></div>
+          <div class="set"><label for="dirSel">Direção</label>
+            <select id="dirSel">
+              <option value="normal" selected>Normal</option>
+              <option value="reverse">Reverso</option>
+              <option value="boomerang">Boomerang (ida e volta)</option>
+            </select></div>
+        </div>
+        <button id="convertBtn">Converter para GIF</button>
+        <div id="progWrap" class="hidden">
+          <div class="pbar"><div id="progBar"></div></div>
+          <div class="ptxt" id="progTxt">…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FILA ======== -->
+  <section class="card hidden" id="queueSec">
+    <h3 class="sec">Fila de <b>vídeos</b></h3>
+    <ul id="queueList"></ul>
+    <button id="convertAllBtn" class="ghost">▶ Converter todos com os ajustes atuais (vídeo inteiro)</button>
+  </section>
+
+  <!-- ======== RESULTADOS ======== -->
+  <section class="card hidden" id="resultsSec">
+    <h3 class="sec">GIFs <b>prontos</b></h3>
+    <div id="resultsGrid"></div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<footer>
+  <div class="foot-in">
+    <span><b style="font-style:italic">PUBLI</b><span style="font-style:italic;font-weight:300">NATION</span> · ferramenta interna de produção de GIFs</span>
+    <span class="privacy">🔒 100% offline no navegador — seus vídeos não são enviados a nenhum servidor</span>
+  </div>
+  <div class="gradbar"></div>
+</footer>
+
+<script>
+/* =================================================================
+   MOTOR GIF — quantização NeuQuant + compressão LZW (GIF89a)
+   Implementação própria, sem dependências externas, roda offline.
+   ================================================================= */
+
+/* ---------- NeuQuant: reduz cada quadro a 256 cores ---------- */
+function NeuQuant(pixels, samplefac){
+  const netsize=256, prime1=499, prime2=491, prime3=487, prime4=503, minpicturebytes=3*prime4;
+  const maxnetpos=netsize-1, netbiasshift=4, ncycles=100;
+  const intbiasshift=16, intbias=1<<intbiasshift, gammashift=10;
+  const betashift=10, beta=intbias>>betashift, betagamma=intbias<<(gammashift-betashift);
+  const initrad=netsize>>3, radiusbiasshift=6, radiusbias=1<<radiusbiasshift;
+  const initradius=initrad*radiusbias, radiusdec=30;
+  const alphabiasshift=10, initalpha=1<<alphabiasshift;
+  const radbiasshift=8, radbias=1<<radbiasshift;
+  const alpharadbshift=alphabiasshift+radbiasshift, alpharadbias=1<<alpharadbshift;
+  let alphadec;
+  const network=[], netindex=new Int32Array(256), bias=new Int32Array(netsize),
+        freq=new Int32Array(netsize), radpower=new Int32Array(netsize>>3);
+
+  for(let i=0;i<netsize;i++){
+    const v=(i<<(netbiasshift+8))/netsize;
+    network[i]=new Float64Array([v,v,v,0]);
+    freq[i]=intbias/netsize; bias[i]=0;
+  }
+  function unbiasnet(){
+    for(let i=0;i<netsize;i++){
+      network[i][0]>>=netbiasshift; network[i][1]>>=netbiasshift; network[i][2]>>=netbiasshift;
+      network[i][3]=i;
+    }
+  }
+  function altersingle(alpha,i,b,g,r){
+    network[i][0]-=(alpha*(network[i][0]-b))/initalpha;
+    network[i][1]-=(alpha*(network[i][1]-g))/initalpha;
+    network[i][2]-=(alpha*(network[i][2]-r))/initalpha;
+  }
+  function alterneigh(radius,i,b,g,r){
+    let lo=i-radius; if(lo<-1)lo=-1;
+    let hi=i+radius; if(hi>netsize)hi=netsize;
+    let j=i+1,k=i-1,m=1;
+    while(j<hi||k>lo){
+      const a=radpower[m++];
+      if(j<hi){const p=network[j++];
+        p[0]-=(a*(p[0]-b))/alpharadbias; p[1]-=(a*(p[1]-g))/alpharadbias; p[2]-=(a*(p[2]-r))/alpharadbias;}
+      if(k>lo){const p=network[k--];
+        p[0]-=(a*(p[0]-b))/alpharadbias; p[1]-=(a*(p[1]-g))/alpharadbias; p[2]-=(a*(p[2]-r))/alpharadbias;}
+    }
+  }
+  function contest(b,g,r){
+    let bestd=~(1<<31), bestbiasd=bestd, bestpos=-1, bestbiaspos=-1;
+    for(let i=0;i<netsize;i++){
+      const n=network[i];
+      let dist=n[0]-b; if(dist<0)dist=-dist;
+      let a=n[1]-g; if(a<0)a=-a; dist+=a;
+      a=n[2]-r; if(a<0)a=-a; dist+=a;
+      if(dist<bestd){bestd=dist;bestpos=i;}
+      const biasdist=dist-((bias[i])>>(intbiasshift-netbiasshift));
+      if(biasdist<bestbiasd){bestbiasd=biasdist;bestbiaspos=i;}
+      const betafreq=freq[i]>>betashift;
+      freq[i]-=betafreq; bias[i]+=betafreq<<gammashift;
+    }
+    freq[bestpos]+=beta; bias[bestpos]-=betagamma;
+    return bestbiaspos;
+  }
+  function inxbuild(){
+    let previouscol=0, startpos=0;
+    for(let i=0;i<netsize;i++){
+      const p=network[i]; let smallpos=i, smallval=p[1]|0;
+      for(let j=i+1;j<netsize;j++){const q=network[j]; if(q[1]<smallval){smallpos=j;smallval=q[1]|0;}}
+      const q=network[smallpos];
+      if(i!==smallpos){
+        let t;
+        t=q[0];q[0]=p[0];p[0]=t; t=q[1];q[1]=p[1];p[1]=t;
+        t=q[2];q[2]=p[2];p[2]=t; t=q[3];q[3]=p[3];p[3]=t;
+      }
+      if(smallval!==previouscol){
+        netindex[previouscol]=(startpos+i)>>1;
+        for(let j=previouscol+1;j<smallval;j++)netindex[j]=i;
+        previouscol=smallval; startpos=i;
+      }
+    }
+    netindex[previouscol]=(startpos+maxnetpos)>>1;
+    for(let j=previouscol+1;j<256;j++)netindex[j]=maxnetpos;
+  }
+  function inxsearch(b,g,r){
+    let bestd=1000, best=-1, i=netindex[g], j=i-1;
+    while(i<netsize||j>=0){
+      if(i<netsize){
+        const p=network[i]; let dist=p[1]-g;
+        if(dist>=bestd)i=netsize;
+        else{
+          i++; if(dist<0)dist=-dist;
+          let a=p[0]-b; if(a<0)a=-a; dist+=a;
+          if(dist<bestd){
+            a=p[2]-r; if(a<0)a=-a; dist+=a;
+            if(dist<bestd){bestd=dist;best=p[3]|0;}
+          }
+        }
+      }
+      if(j>=0){
+        const p=network[j]; let dist=g-p[1];
+        if(dist>=bestd)j=-1;
+        else{
+          j--; if(dist<0)dist=-dist;
+          let a=p[0]-b; if(a<0)a=-a; dist+=a;
+          if(dist<bestd){
+            a=p[2]-r; if(a<0)a=-a; dist+=a;
+            if(dist<bestd){bestd=dist;best=p[3]|0;}
+          }
+        }
+      }
+    }
+    return best;
+  }
+  function learn(){
+    const lengthcount=pixels.length;
+    alphadec=30+((samplefac-1)/3);
+    const samplepixels=lengthcount/(3*samplefac);
+    let delta=(samplepixels/ncycles)|0;
+    let alpha=initalpha, radius=initradius;
+    let rad=radius>>radiusbiasshift; if(rad<=1)rad=0;
+    for(let i=0;i<rad;i++)radpower[i]=alpha*(((rad*rad-i*i)*radbias)/(rad*rad));
+    let step;
+    if(lengthcount<minpicturebytes)step=3;
+    else if(lengthcount%prime1!==0)step=3*prime1;
+    else if(lengthcount%prime2!==0)step=3*prime2;
+    else if(lengthcount%prime3!==0)step=3*prime3;
+    else step=3*prime4;
+    let pix=0;
+    for(let i=0;i<samplepixels;){
+      const b=(pixels[pix]&0xff)<<netbiasshift,
+            g=(pixels[pix+1]&0xff)<<netbiasshift,
+            r=(pixels[pix+2]&0xff)<<netbiasshift;
+      const j=contest(b,g,r);
+      altersingle(alpha,j,b,g,r);
+      if(rad!==0)alterneigh(rad,j,b,g,r);
+      pix+=step; if(pix>=lengthcount)pix-=lengthcount;
+      i++;
+      if(delta===0)delta=1;
+      if(i%delta===0){
+        alpha-=alpha/alphadec;
+        radius-=radius/radiusdec;
+        rad=radius>>radiusbiasshift; if(rad<=1)rad=0;
+        for(let k=0;k<rad;k++)radpower[k]=alpha*(((rad*rad-k*k)*radbias)/(rad*rad));
+      }
+    }
+  }
+  learn(); unbiasnet(); inxbuild();
+  return {
+    getColormap(){
+      const map=new Uint8Array(netsize*3), index=new Int32Array(netsize);
+      for(let i=0;i<netsize;i++)index[network[i][3]|0]=i;
+      let k=0;
+      for(let l=0;l<netsize;l++){
+        const j=index[l];
+        map[k++]=network[j][0]|0; map[k++]=network[j][1]|0; map[k++]=network[j][2]|0;
+      }
+      return map;
+    },
+    lookup(r,g,b){return inxsearch(r,g,b);} // ordem consistente com learn (R primeiro)
+  };
+}
+
+/* ---------- LZW: compressão dos índices de cor ---------- */
+function LZWEncoder(width,height,pixels,colorDepth){
+  const EOF=-1, BITS=12, HSIZE=5003;
+  const initCodeSize=Math.max(2,colorDepth);
+  const htab=new Int32Array(HSIZE), codetab=new Int32Array(HSIZE);
+  const accum=new Uint8Array(256);
+  const masks=[0x0000,0x0001,0x0003,0x0007,0x000F,0x001F,0x003F,0x007F,0x00FF,
+               0x01FF,0x03FF,0x07FF,0x0FFF,0x1FFF,0x3FFF,0x7FFF,0xFFFF];
+  let curPixel=0, remaining=0, cur_accum=0, cur_bits=0, a_count=0,
+      free_ent=0, maxcode=0, clear_flg=false, g_init_bits=0,
+      ClearCode=0, EOFCode=0, n_bits=0;
+
+  const MAXCODE=n=>(1<<n)-1;
+  function char_out(c,outs){accum[a_count++]=c; if(a_count>=254)flush_char(outs);}
+  function flush_char(outs){if(a_count>0){outs.writeByte(a_count);outs.writeBytes(accum,0,a_count);a_count=0;}}
+  function cl_hash(){for(let i=0;i<HSIZE;++i)htab[i]=-1;}
+  function cl_block(outs){cl_hash();free_ent=ClearCode+2;clear_flg=true;output(ClearCode,outs);}
+  function nextPixel(){if(remaining===0)return EOF;--remaining;return pixels[curPixel++]&0xff;}
+  function output(code,outs){
+    cur_accum&=masks[cur_bits];
+    if(cur_bits>0)cur_accum|=code<<cur_bits; else cur_accum=code;
+    cur_bits+=n_bits;
+    while(cur_bits>=8){char_out(cur_accum&0xff,outs);cur_accum>>=8;cur_bits-=8;}
+    if(free_ent>maxcode||clear_flg){
+      if(clear_flg){maxcode=MAXCODE(n_bits=g_init_bits);clear_flg=false;}
+      else{++n_bits;maxcode=(n_bits===BITS)?(1<<BITS):MAXCODE(n_bits);}
+    }
+    if(code===EOFCode){
+      while(cur_bits>0){char_out(cur_accum&0xff,outs);cur_accum>>=8;cur_bits-=8;}
+      flush_char(outs);
+    }
+  }
+  function compress(init_bits,outs){
+    g_init_bits=init_bits; clear_flg=false; n_bits=g_init_bits; maxcode=MAXCODE(n_bits);
+    ClearCode=1<<(init_bits-1); EOFCode=ClearCode+1; free_ent=ClearCode+2;
+    a_count=0; cur_accum=0; cur_bits=0;
+    let ent=nextPixel();
+    let hshift=0;
+    for(let fcode=HSIZE;fcode<65536;fcode*=2)++hshift;
+    hshift=8-hshift;
+    cl_hash();
+    output(ClearCode,outs);
+    let c;
+    outer:
+    while((c=nextPixel())!==EOF){
+      let fcode=(c<<BITS)+ent;
+      let i=(c<<hshift)^ent;
+      if(htab[i]===fcode){ent=codetab[i];continue;}
+      else if(htab[i]>=0){
+        let disp=HSIZE-i; if(i===0)disp=1;
+        do{
+          if((i-=disp)<0)i+=HSIZE;
+          if(htab[i]===fcode){ent=codetab[i];continue outer;}
+        }while(htab[i]>=0);
+      }
+      output(ent,outs); ent=c;
+      if(free_ent<(1<<BITS)){codetab[i]=free_ent++;htab[i]=fcode;}
+      else cl_block(outs);
+    }
+    output(ent,outs); output(EOFCode,outs);
+  }
+  return {
+    encode(outs){
+      outs.writeByte(initCodeSize);
+      remaining=width*height; curPixel=0;
+      compress(initCodeSize+1,outs);
+      outs.writeByte(0);
+    }
+  };
+}
+
+/* ---------- buffer de bytes que cresce sozinho ---------- */
+class ByteBuf{
+  constructor(){this.a=new Uint8Array(1<<16);this.n=0;}
+  _ensure(k){
+    if(this.n+k>this.a.length){
+      let c=this.a.length; while(this.n+k>c)c*=2;
+      const b=new Uint8Array(c); b.set(this.a.subarray(0,this.n)); this.a=b;
+    }
+  }
+  writeByte(v){this._ensure(1);this.a[this.n++]=v&0xff;}
+  writeBytes(arr,off,len){
+    off=off||0; len=(len===undefined)?arr.length:len;
+    this._ensure(len);
+    this.a.set(arr.subarray?arr.subarray(off,off+len):arr.slice(off,off+len),this.n);
+    this.n+=len;
+  }
+  writeShort(v){this.writeByte(v&0xff);this.writeByte((v>>8)&0xff);}
+  writeUTF(s){for(let i=0;i<s.length;i++)this.writeByte(s.charCodeAt(i));}
+  bytes(){return this.a.slice(0,this.n);}
+}
+
+/* ---------- montador do arquivo GIF89a ---------- */
+class GifBuilder{
+  // repeat: 0 = infinito · -1 = tocar 1 vez · n>=2 = n repetições
+  constructor(w,h,{repeat=0,delay=7,sample=10}={}){
+    this.w=w; this.h=h; this.repeat=repeat; this.delay=delay; this.sample=sample;
+    this.out=new ByteBuf(); this.first=true;
+    this.out.writeUTF('GIF89a');
+  }
+  addFrame(imageData){
+    const npix=this.w*this.h, data=imageData.data;
+    const rgb=new Uint8Array(npix*3);
+    for(let i=0,j=0,k=0;i<npix;i++,k+=4){
+      rgb[j++]=data[k]; rgb[j++]=data[k+1]; rgb[j++]=data[k+2];
+    }
+    const nq=NeuQuant(rgb,this.sample);
+    const colorTab=nq.getColormap();
+    const indexed=new Uint8Array(npix);
+    for(let i=0,j=0;i<npix;i++,j+=3){
+      indexed[i]=nq.lookup(rgb[j],rgb[j+1],rgb[j+2]);
+    }
+    if(this.first){
+      // Logical Screen Descriptor + paleta global (do 1º quadro)
+      this.out.writeShort(this.w); this.out.writeShort(this.h);
+      this.out.writeByte(0x80|0x70|0x07); // GCT, 8 bits, 256 cores
+      this.out.writeByte(0); this.out.writeByte(0);
+      this.out.writeBytes(colorTab);
+      if(this.repeat>=0){ // extensão Netscape (loop)
+        this.out.writeByte(0x21); this.out.writeByte(0xff); this.out.writeByte(11);
+        this.out.writeUTF('NETSCAPE2.0');
+        this.out.writeByte(3); this.out.writeByte(1);
+        this.out.writeShort(this.repeat); this.out.writeByte(0);
+      }
+    }
+    // Graphic Control Extension
+    this.out.writeByte(0x21); this.out.writeByte(0xf9); this.out.writeByte(4);
+    this.out.writeByte(0);                // sem transparência
+    this.out.writeShort(this.delay);      // centésimos de segundo
+    this.out.writeByte(0); this.out.writeByte(0);
+    // Image Descriptor
+    this.out.writeByte(0x2c);
+    this.out.writeShort(0); this.out.writeShort(0);
+    this.out.writeShort(this.w); this.out.writeShort(this.h);
+    if(this.first){this.out.writeByte(0);}
+    else{this.out.writeByte(0x80|0x07); this.out.writeBytes(colorTab);} // paleta local
+    LZWEncoder(this.w,this.h,indexed,8).encode(this.out);
+    this.first=false;
+  }
+  finish(){this.out.writeByte(0x3b);return this.out.bytes();}
+}
+
+/* =================================================================
+   APLICAÇÃO
+   ================================================================= */
+const $=s=>document.querySelector(s);
+const dropzone=$('#dropzone'), fileInput=$('#fileInput'),
+      editor=$('#editor'), vid=$('#vid'), fiName=$('#fiName'), fiMeta=$('#fiMeta'),
+      startR=$('#startR'), endR=$('#endR'), startLbl=$('#startLbl'), endLbl=$('#endLbl'),
+      estimate=$('#estimate'),
+      fpsSel=$('#fpsSel'), widthSel=$('#widthSel'), qualSel=$('#qualSel'),
+      speedSel=$('#speedSel'), loopSel=$('#loopSel'), dirSel=$('#dirSel'),
+      convertBtn=$('#convertBtn'), progWrap=$('#progWrap'), progBar=$('#progBar'), progTxt=$('#progTxt'),
+      queueSec=$('#queueSec'), queueList=$('#queueList'), convertAllBtn=$('#convertAllBtn'),
+      resultsSec=$('#resultsSec'), resultsGrid=$('#resultsGrid'), toast=$('#toast');
+
+const state={active:null, queue:[], busy:false};
+const canvas=document.createElement('canvas');
+const ctx=canvas.getContext('2d',{willReadFrequently:true});
+const tick=()=>new Promise(r=>setTimeout(r,0));
+let toastTimer=null;
+
+function showToast(msg){
+  toast.textContent=msg; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),4200);
+}
+function fmtTime(t){
+  t=Math.max(0,t||0);
+  const m=Math.floor(t/60), s=t-m*60;
+  return m+':'+s.toFixed(1).padStart(4,'0').replace('.',',');
+}
+function fmtSize(b){
+  if(b<1024)return b+' B';
+  if(b<1048576)return Math.round(b/1024)+' KB';
+  return (b/1048576).toFixed(2).replace('.',',')+' MB';
+}
+
+/* ---------- entrada de arquivos ---------- */
+function isVideo(f){
+  return (f.type&&f.type.startsWith('video/'))||/\.(mp4|mov|webm|m4v|mkv|avi)$/i.test(f.name);
+}
+function addFiles(list){
+  const vids=[...list].filter(isVideo);
+  if(!vids.length){showToast('Nenhum arquivo de vídeo reconhecido.');return;}
+  for(const f of vids){
+    const item={id:Math.random().toString(36).slice(2),file:f,url:URL.createObjectURL(f),
+                name:f.name,size:f.size,status:'na fila'};
+    if(!state.active)openInEditor(item); else state.queue.push(item);
+  }
+  renderQueue();
+}
+dropzone.addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',()=>{addFiles(fileInput.files);fileInput.value='';});
+['dragenter','dragover'].forEach(ev=>dropzone.addEventListener(ev,e=>{e.preventDefault();dropzone.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev,e=>{e.preventDefault();dropzone.classList.remove('drag');}));
+dropzone.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
+document.addEventListener('dragover',e=>e.preventDefault());
+document.addEventListener('drop',e=>e.preventDefault());
+
+/* ---------- editor ---------- */
+function openInEditor(item){
+  state.active=item;
+  editor.classList.remove('hidden');
+  dropzone.classList.add('compact');
+  fiName.textContent=item.name;
+  fiMeta.textContent=fmtSize(item.size);
+  vid.src=item.url;
+}
+vid.addEventListener('loadedmetadata',async()=>{
+  let d=vid.duration;
+  if(!isFinite(d)){ // alguns vídeos gravados em stream reportam Infinity
+    vid.currentTime=1e7;
+    await new Promise(r=>{
+      const h=()=>{vid.removeEventListener('durationchange',h);r();};
+      vid.addEventListener('durationchange',h); setTimeout(r,2000);
+    });
+    d=vid.duration; vid.currentTime=0;
+  }
+  if(!state.active)return;
+  state.active.duration=d;
+  startR.max=endR.max=d; startR.value=0; endR.value=d;
+  fiMeta.textContent=`${vid.videoWidth}×${vid.videoHeight} · ${fmtTime(d)} · ${fmtSize(state.active.size)}`;
+  syncTrim();
+});
+vid.addEventListener('error',()=>{
+  if(!state.active)return;
+  showToast('O navegador não conseguiu ler esse vídeo. Tente um MP4 (H.264) ou WebM.');
+  closeActive();
+});
+function syncTrim(){
+  let s=parseFloat(startR.value), e=parseFloat(endR.value);
+  if(e-s<0.1){ // mantém trecho mínimo de 0,1 s
+    if(document.activeElement===startR){s=Math.max(0,e-0.1);startR.value=s;}
+    else{e=Math.min(parseFloat(endR.max),s+0.1);endR.value=e;}
+  }
+  startLbl.textContent=fmtTime(s); endLbl.textContent=fmtTime(e);
+  updateEstimate();
+}
+startR.addEventListener('input',()=>{vid.currentTime=parseFloat(startR.value);syncTrim();});
+endR.addEventListener('input',()=>{vid.currentTime=parseFloat(endR.value);syncTrim();});
+$('#setStart').addEventListener('click',()=>{startR.value=Math.min(vid.currentTime,parseFloat(endR.value)-0.1);syncTrim();});
+$('#setEnd').addEventListener('click',()=>{endR.value=Math.max(vid.currentTime,parseFloat(startR.value)+0.1);syncTrim();});
+[fpsSel,widthSel,speedSel,dirSel].forEach(el=>el.addEventListener('change',updateEstimate));
+function currentSettings(){
+  return {
+    fps:parseFloat(fpsSel.value),
+    width:widthSel.value,
+    sample:parseInt(qualSel.value,10),
+    speed:parseFloat(speedSel.value),
+    repeat:loopSel.value==='inf'?0:(loopSel.value==='1'?-1:parseInt(loopSel.value,10)),
+    dir:dirSel.value
+  };
+}
+function frameCount(s,e,fps,speed,dir){
+  let n=Math.max(1,Math.floor((e-s)*fps/speed));
+  if(dir==='boomerang')n=Math.max(1,2*n-2);
+  return n;
+}
+function updateEstimate(){
+  if(!state.active||!state.active.duration)return;
+  const s=parseFloat(startR.value), e=parseFloat(endR.value), cfg=currentSettings();
+  const n=frameCount(s,e,cfg.fps,cfg.speed,cfg.dir);
+  const durOut=((e-s)/cfg.speed).toFixed(1).replace('.',',');
+  estimate.innerHTML=`Trecho: <b>${fmtTime(s)} → ${fmtTime(e)}</b> · GIF de <b>${durOut} s</b> · ~<b>${n}</b> quadros`+
+    (n>400?' <span class="warn">⚠ GIF longo — arquivo vai ficar pesado</span>':'');
+}
+$('#closeEditor').addEventListener('click',closeActive);
+function closeActive(){
+  state.active=null; vid.removeAttribute('src'); vid.load();
+  editor.classList.add('hidden');
+  const next=state.queue.shift();
+  if(next)openInEditor(next);
+  else if(!state.queue.length&&!resultsGrid.children.length)dropzone.classList.remove('compact');
+  renderQueue();
+}
+
+/* ---------- fila ---------- */
+function renderQueue(){
+  queueList.innerHTML='';
+  if(!state.queue.length){queueSec.classList.add('hidden');return;}
+  queueSec.classList.remove('hidden');
+  for(const item of state.queue){
+    const li=document.createElement('li');
+    const st=item.status||'na fila';
+    li.innerHTML=`<span class="qname">${item.name}</span>
+      <span class="qsize">${fmtSize(item.size)}</span>
+      <span class="qstat ${st==='pronto'?'ok':(st==='erro'?'err':'')}" data-id="${item.id}">${st}</span>`;
+    const open=document.createElement('button');
+    open.className='ghost'; open.textContent='abrir no editor';
+    open.onclick=()=>{state.queue=state.queue.filter(q=>q!==item);
+      if(state.active){state.queue.unshift(state.active);}
+      openInEditor(item); renderQueue();};
+    const rm=document.createElement('button');
+    rm.className='ghost'; rm.textContent='✕';
+    rm.onclick=()=>{state.queue=state.queue.filter(q=>q!==item);renderQueue();};
+    li.appendChild(open); li.appendChild(rm);
+    queueList.appendChild(li);
+  }
+}
+
+/* ---------- captura + conversão ---------- */
+function seekTo(v,t){
+  return new Promise(res=>{
+    if(Math.abs(v.currentTime-t)<0.002){
+      requestAnimationFrame(()=>requestAnimationFrame(res)); return;
+    }
+    let done=false;
+    const h=()=>{
+      if(done)return; done=true;
+      v.removeEventListener('seeked',h);
+      requestAnimationFrame(()=>requestAnimationFrame(res));
+    };
+    v.addEventListener('seeked',h);
+    v.currentTime=t;
+    setTimeout(h,2500); // salvaguarda contra seek travado
+  });
+}
+function computeTimes(start,end,fps,speed){
+  const step=speed/fps;
+  const tMax=Math.max(start,end-0.02);
+  const n=Math.max(1,Math.floor((end-start)/step));
+  const times=[];
+  for(let i=0;i<n;i++)times.push(Math.min(Math.max(start+i*step,0.015),tMax));
+  return times;
+}
+async function convertVideo(videoEl,name,cfg,start,end,onProg){
+  const vw=videoEl.videoWidth, vh=videoEl.videoHeight;
+  if(!vw||!vh)throw new Error('não consegui ler as dimensões do vídeo');
+  const w=cfg.width==='orig'?vw:Math.min(parseInt(cfg.width,10),vw);
+  const h=Math.max(1,Math.round(vh*w/vw));
+  const times=computeTimes(start,end,cfg.fps,cfg.speed);
+  const total=frameCount(start,end,cfg.fps,cfg.speed,cfg.dir);
+  if(total>900&&!confirm(`Serão ${total} quadros — a conversão pode demorar e o GIF vai ficar bem pesado. Continuar mesmo assim?`))
+    return null;
+  canvas.width=w; canvas.height=h;
+  videoEl.pause();
+  // fase 1 — captura dos quadros
+  let frames=[];
+  for(let i=0;i<times.length;i++){
+    await seekTo(videoEl,times[i]);
+    ctx.drawImage(videoEl,0,0,w,h);
+    frames.push(ctx.getImageData(0,0,w,h));
+    onProg(0.05+(i+1)/times.length*0.50,`Capturando quadros ${i+1}/${times.length}…`);
+    if(i%4===0)await tick();
+  }
+  // direção
+  if(cfg.dir==='reverse')frames.reverse();
+  else if(cfg.dir==='boomerang')frames=frames.concat(frames.slice(1,-1).reverse());
+  // fase 2 — codificação
+  const delay=Math.max(2,Math.round(100/cfg.fps));
+  const gb=new GifBuilder(w,h,{repeat:cfg.repeat,delay,sample:cfg.sample});
+  for(let i=0;i<frames.length;i++){
+    gb.addFrame(frames[i]);
+    onProg(0.55+(i+1)/frames.length*0.44,`Codificando GIF ${i+1}/${frames.length}…`);
+    await tick();
+  }
+  const bytes=gb.finish();
+  const blob=new Blob([bytes],{type:'image/gif'});
+  onProg(1,'Pronto!');
+  return {blob,width:w,height:h,frames:frames.length,fps:cfg.fps,name};
+}
+
+/* ---------- resultados ---------- */
+function addResult(res){
+  const url=URL.createObjectURL(res.blob);
+  const gifName=res.name.replace(/\.[^.]+$/,'')+'.gif';
+  const card=document.createElement('div');
+  card.className='result-card';
+  card.innerHTML=`<img src="${url}" alt="${gifName}">
+    <div class="rc-body">
+      <div class="rc-name" title="${gifName}">${gifName}</div>
+      <div class="rc-meta">${res.width}×${res.height} · ${res.frames} quadros · ${res.fps} fps · <b>${fmtSize(res.blob.size)}</b></div>
+      <div class="rc-row">
+        <a class="dl" href="${url}" download="${gifName}">⬇ Baixar GIF</a>
+        <button class="ghost rc-del">✕</button>
+      </div>
+    </div>`;
+  card.querySelector('.rc-del').onclick=()=>{card.remove();
+    if(!resultsGrid.children.length)resultsSec.classList.add('hidden');};
+  resultsGrid.prepend(card);
+  resultsSec.classList.remove('hidden');
+  window.__lastResult=res; // usado em testes automatizados
+}
+
+/* ---------- botão converter (vídeo do editor) ---------- */
+convertBtn.addEventListener('click',async()=>{
+  if(state.busy||!state.active)return;
+  state.busy=true; convertBtn.disabled=true;
+  progWrap.classList.remove('hidden');
+  const prog=(f,txt)=>{progBar.style.width=Math.round(f*100)+'%';progTxt.textContent=txt+' '+Math.round(f*100)+'%';};
+  try{
+    const res=await convertVideo(vid,state.active.name,currentSettings(),
+      parseFloat(startR.value),parseFloat(endR.value),prog);
+    if(res){addResult(res);resultsSec.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  }catch(err){
+    console.error(err);
+    showToast('Erro na conversão: '+err.message);
+  }finally{
+    state.busy=false; convertBtn.disabled=false;
+    setTimeout(()=>progWrap.classList.add('hidden'),1600);
+  }
+});
+
+/* ---------- converter toda a fila ---------- */
+convertAllBtn.addEventListener('click',async()=>{
+  if(state.busy)return;
+  if(!state.queue.length)return;
+  state.busy=true; convertAllBtn.disabled=true; convertBtn.disabled=true;
+  const cfg=currentSettings();
+  const items=[...state.queue];
+  for(const item of items){
+    const stat=queueList.querySelector(`[data-id="${item.id}"]`);
+    const setStat=(t,cls)=>{if(stat){stat.textContent=t;stat.className='qstat '+(cls||'');}};
+    try{
+      const v=document.createElement('video');
+      v.muted=true; v.playsInline=true; v.preload='auto'; v.src=item.url;
+      await new Promise((res,rej)=>{
+        v.addEventListener('loadedmetadata',res,{once:true});
+        v.addEventListener('error',()=>rej(new Error('formato não suportado')),{once:true});
+        setTimeout(()=>rej(new Error('tempo esgotado ao abrir o vídeo')),15000);
+      });
+      let d=v.duration;
+      if(!isFinite(d)){
+        v.currentTime=1e7;
+        await new Promise(r=>{v.addEventListener('durationchange',r,{once:true});setTimeout(r,2000);});
+        d=v.duration;
+      }
+      const res=await convertVideo(v,item.name,cfg,0,d,
+        (f,txt)=>setStat(Math.round(f*100)+'%'));
+      if(res){addResult(res);item.status='pronto';setStat('pronto','ok');}
+      v.removeAttribute('src'); v.load();
+    }catch(err){
+      console.error(err);
+      item.status='erro'; setStat('erro','err');
+    }
+  }
+  state.queue=state.queue.filter(q=>q.status!=='pronto');
+  setTimeout(renderQueue,900);
+  state.busy=false; convertAllBtn.disabled=false; convertBtn.disabled=false;
+  resultsSec.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+</script>
+</body>
+</html>

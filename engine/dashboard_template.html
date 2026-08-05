@@ -156,6 +156,7 @@ a.lk:hover{ text-decoration:underline; }
         <button data-v="hub" class="on">Time</button>
         <button data-v="planej">Pessoa</button>
         <button data-v="prazo">Prazos</button>
+        <button data-v="gestao">Gestão</button>
       </div>
     </div>
     <div class="ctl-group">
@@ -335,6 +336,14 @@ function renderAttention(){
 }
 
 function render(){
+  if(view==="gestao"){
+    document.getElementById("charts").style.display="none";
+    document.getElementById("legend").style.display="none";
+    document.getElementById("content").innerHTML=window.__GESTAO_HTML||"";
+    return;
+  }
+  document.getElementById("charts").style.display="grid";
+  document.getElementById("legend").style.display="";
   const shown=TASKS.filter(passFilter);
   const base=TASKS.filter(t=>activeHubs.has(t.hub)&&!t.concl);
   const late=base.filter(t=>{const d=daysLeft(t.prazo);return d!==null&&d<0;}).length;
