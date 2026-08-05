@@ -121,6 +121,62 @@
   .incs{display:flex;align-items:center;gap:5px;background:#fbf3cd22;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;user-select:none}
   .incs input{width:14px;height:14px;accent-color:var(--cream);cursor:pointer}
 </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
+<style id="darkskin">
+:root{--cream:#0f100e;--black:#FFF7CF;--card:#1b1c19;--border:rgba(255,247,207,.12);--muted:#8f8b7c;--pill:rgba(255,247,207,.06);--good:#22C978;--warn:#F5385D;--brand:#D9094F;--ink:#FFF7CF;--ink2:#c7c2ac;--ink3:#8f8b7c;--line:rgba(255,247,207,.10);--line2:rgba(255,247,207,.16);--g1:#DB1150;--g2:#E9644F;--g3:#FBCB4E;}
+*{font-family:"Poppins",system-ui,-apple-system,sans-serif !important}
+body{background:radial-gradient(1200px 600px at 80% -10%,#1a1b17,#0f100e 55%) fixed,#0f100e !important;color:var(--ink) !important;-webkit-font-smoothing:antialiased}
+.topnav{background:rgba(15,16,14,.9) !important;backdrop-filter:blur(10px);border-bottom:1px solid var(--line) !important;box-shadow:none !important}
+.topnav .brand,.topnav a.lnk{color:var(--ink) !important}
+.topnav a.lnk{opacity:1 !important;color:var(--ink2) !important;font-weight:500 !important}
+.topnav a.lnk:hover{background:rgba(255,247,207,.06) !important;color:var(--ink) !important}
+.topnav a.lnk.active{background:var(--brand) !important;color:#fff !important}
+.logo{color:var(--ink) !important}
+.sub,.hint,.note,.legend{color:var(--ink3) !important}
+.card,.redes,.tablebox,.config,.adv,details,.banner,.summary,.aud,.compare,.results,.scenario,.scnhint,.f,.grid,.tiers{box-shadow:none !important}
+.card,.redes,.tablebox,.config,details,.banner,.summary,.aud,.compare,.scenario,.scnhint{background:var(--card) !important;border:1px solid var(--line) !important;border-radius:16px !important;color:var(--ink) !important}
+.banner{border:1px dashed var(--line2) !important;color:var(--ink3) !important}
+h1,h2,h3,h4,h5,h6{color:var(--ink) !important}
+button{background:var(--brand) !important;color:#fff !important;border:0 !important;box-shadow:none !important;border-radius:999px !important;font-weight:600 !important}
+button.ghost{background:transparent !important;color:var(--ink) !important;border:1px solid var(--line2) !important}
+button.danger{background:transparent !important;color:var(--warn) !important;border:0 !important}
+input,select,textarea{background:#141513 !important;color:var(--ink) !important;border:1px solid var(--line2) !important;border-radius:10px !important}
+input::placeholder{color:var(--ink3) !important}
+label{color:var(--ink2) !important}
+table{color:var(--ink) !important}
+thead th{background:#141513 !important;color:var(--ink2) !important;border-color:var(--line) !important}
+tbody td{border-color:var(--line) !important;color:var(--ink) !important;background:transparent !important}
+.chip{background:transparent !important;border:1px solid var(--line2) !important;color:var(--ink2) !important}
+.chip.on{background:var(--brand) !important;color:#fff !important;border-color:var(--brand) !important}
+.chip .badge{background:rgba(255,247,207,.12) !important;color:var(--ink) !important}
+.scntab{background:var(--card) !important;border:1px solid var(--line2) !important;color:var(--ink2) !important;border-radius:12px !important}
+.scntab.on{background:var(--brand) !important;color:#fff !important}
+.scntab.add{background:transparent !important;border-style:dashed !important}
+.scenario .headline{background:rgba(255,247,207,.05) !important;border:1px dashed var(--line2) !important;color:var(--ink) !important}
+.scenario .copybtn{background:var(--brand) !important;color:#fff !important}
+.warn{color:var(--warn) !important}
+.dot.auto{background:rgba(34,201,120,.25) !important;border:1px solid var(--good) !important}
+.dot.manual{background:rgba(245,56,93,.2) !important;border:1px solid var(--warn) !important}
+.toast{background:#1b1c19 !important;color:var(--ink) !important;border:1px solid var(--line2) !important}
+a{color:var(--g2) !important}
+
+.influ,.summary,.aud{background:var(--card) !important;border:1px solid var(--line) !important;box-shadow:none !important;color:var(--ink) !important;border-radius:16px !important}
+.influ-top{background:#141513 !important;color:var(--ink) !important}
+.influ-top .num,.num.circle{background:var(--brand) !important;color:#fff !important}
+.influ-top input{color:var(--ink) !important;border-bottom:2px dashed var(--line2) !important}
+.influ-top input::placeholder{color:var(--ink3) !important}
+.platbox{background:rgba(255,247,207,.05) !important;border:1px solid var(--line) !important}
+.aud .headline,.scenario .headline{background:rgba(255,247,207,.05) !important;border:1px dashed var(--line2) !important;color:var(--ink) !important}
+input.cell,select.cell,textarea.cell{color:var(--ink) !important;background:transparent !important}
+input.cell:focus,textarea.cell:focus,select.cell:focus{background:#141513 !important;border-color:var(--brand) !important;color:var(--ink) !important}
+.alertbox{background:rgba(251,209,78,.12) !important;border:1px solid rgba(251,209,78,.4) !important;color:var(--ink) !important}
+.alertbox.warn{background:rgba(245,56,93,.12) !important;border-color:var(--warn) !important;color:var(--ink) !important}
+.alertbox.ok{background:rgba(34,201,120,.12) !important;border-color:var(--good) !important;color:var(--ink) !important}
+td.num{color:var(--ink3) !important}
+.kpi .l{color:var(--ink3) !important}.kpi .v{color:var(--ink) !important}
+</style>
 </head>
 <body>
 <div class="topnav">
@@ -142,15 +198,15 @@
     <input type="file" id="csvfile" accept=".csv" style="display:none" onchange="loadCSV(this)">
   </div>
 
-  <div style="background:#fff4e5;border:2px solid #b3261e;border-left:8px solid #b3261e;border-radius:14px;padding:14px 18px;margin-bottom:16px;box-shadow:3px 3px 0 #16151422">
-    <div style="font-weight:900;font-size:14px;color:#b3261e;margin-bottom:4px">⚠️ Números da Sprout = conteúdo ORGÂNICO</div>
-    <div style="font-size:13px;color:#161514;line-height:1.5">As médias de views e engajamento que vêm da Sprout são do conteúdo <b>orgânico</b> do influ. <b>Publi rende diferente</b> (quase sempre menos alcance). Antes de fechar a estimativa, ajuste os campos de <b>views/engajamento com base nas publis</b> de cada perfil — se deixar o número orgânico cru, a estimativa sai <b>bem acima do real</b>.</div>
+  <div style="background:rgba(245,56,93,.10);border:1px solid rgba(245,56,93,.45);border-left:4px solid #F5385D;border-radius:14px;padding:14px 18px;margin-bottom:16px">
+    <div style="font-weight:700;font-size:14px;color:#F5385D;margin-bottom:4px">⚠️ Números da Sprout = conteúdo ORGÂNICO</div>
+    <div style="font-size:13px;color:#FFF7CF;line-height:1.5">As médias de views e engajamento que vêm da Sprout são do conteúdo <b>orgânico</b> do influ. <b>Publi rende diferente</b> (quase sempre menos alcance). Antes de fechar a estimativa, ajuste os campos de <b>views/engajamento com base nas publis</b> de cada perfil — se deixar o número orgânico cru, a estimativa sai <b>bem acima do real</b>.</div>
   </div>
 
   <div id="importModal" style="display:none;position:fixed;inset:0;background:#16151488;z-index:50;align-items:center;justify-content:center">
     <div style="background:var(--card);border:2px solid var(--black);border-radius:18px;padding:24px;max-width:480px;width:92%;box-shadow:4px 4px 0 var(--black)">
       <h3 style="font-weight:900;margin-bottom:6px">📥 Achei <span id="impCount">0</span> influs na planilha!</h3>
-      <p style="font-size:12.5px;color:#b3261e;font-weight:700;background:#fff4e5;border:1px solid #b3261e;border-radius:10px;padding:8px 10px;margin-bottom:12px">⚠️ Lembre: os números da Sprout são do conteúdo orgânico. Ajuste depois com base nas <b>publis</b> pra estimativa não sair inflada.</p>
+      <p style="font-size:12.5px;color:#F5385D;font-weight:700;background:rgba(245,56,93,.12);border:1px solid rgba(245,56,93,.4);border-radius:10px;padding:8px 10px;margin-bottom:12px">⚠️ Lembre: os números da Sprout são do conteúdo orgânico. Ajuste depois com base nas <b>publis</b> pra estimativa não sair inflada.</p>
       <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Qual é o escopo? Vou aplicar pra todo mundo (depois dá pra ajustar um por um).</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
         <div class="f"><label>Reels por influ</label><input id="scReels" value="1"></div>
