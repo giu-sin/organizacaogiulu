@@ -201,21 +201,21 @@ td.num{color:var(--ink3) !important}
 
   <div style="background:rgba(245,56,93,.10);border:1px solid rgba(245,56,93,.45);border-left:4px solid #F5385D;border-radius:14px;padding:14px 18px;margin-bottom:16px">
     <div style="font-weight:700;font-size:14px;color:#F5385D;margin-bottom:4px">⚠️ Números da Sprout = conteúdo ORGÂNICO</div>
-    <div style="font-size:13px;color:#FFF7CF;line-height:1.5">As médias de views e engajamento que vêm da Sprout são do conteúdo <b>orgânico</b> do influ. <b>Publi rende diferente</b> (quase sempre menos alcance). Antes de fechar a estimativa, ajuste os campos de <b>views/engajamento com base nas publis</b> de cada perfil — se deixar o número orgânico cru, a estimativa sai <b>bem acima do real</b>.</div>
+    <div style="font-size:13px;color:#FFF7CF;line-height:1.5">As médias de views e engajamento que vêm da Sprout são do conteúdo <b>orgânico</b> do influ. <b>Publi sempre é abaixo do orgânico.</b> Antes de fechar a estimativa, ajuste os campos de <b>views/engajamento com base nas publis</b> de cada perfil — se deixar o número orgânico cru, a estimativa sai <b>bem acima do real</b>.</div>
   </div>
 
   <details id="glossario" class="config" style="margin-bottom:16px">
     <summary>📖 Glossário — como usar, o que significa cada campo e como puxar da Sprout</summary>
     <div style="font-size:13.5px;line-height:1.65;color:var(--ink2);padding:6px 2px 4px">
       <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:14px 0 6px">1 · Como puxar a planilha da Sprout</h6>
-      <div>Abra no Sprout a lista de creators da campanha (Influencer Marketing → sua lista) e <b>exporte em CSV</b>. Aqui, clique em <b>Importar do Sprout (CSV)</b> e suba o arquivo. O sistema preenche sozinho <b>seguidores</b> e <b>taxa de engajamento</b> de cada rede.<br><span style="color:var(--warn)">⚠️ O Sprout não exporta média de views</span> — esses campos ficam vermelhos pra preencher à mão (pega no perfil, média dos últimos posts). E lembre: os números vêm do <b>orgânico</b> — ajuste pelas <b>publis</b>.</div>
+      <div>No Sprout, <b>crie uma campanha</b>, suba os influs que você quer nos cenários e <b>baixe o CSV</b>. Aqui, clique em <b>Importar do Sprout (CSV)</b> e suba o arquivo. O sistema preenche sozinho <b>seguidores</b> e <b>taxa de engajamento</b> de cada rede.<br><span style="color:var(--warn)">⚠️ O Sprout não pega publi</span> — a média de views não vem, e views/engajamento têm que ser conferidos <b>manualmente na publi</b> (pega as últimas publis e faz a média). Não use o número orgânico cru.</div>
 
       <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:16px 0 6px">2 · O que significa cada campo</h6>
       <div style="display:grid;gap:5px">
         <div><b>Orçamento (R$)</b> — cachê total do influ. É a base do CPM e do CPE.</div>
         <div><b>Seguidores</b> — total da conta (pode escrever 7.4M ou 7400000).</div>
-        <div><b>Média de views</b> — soma uns 3–5 posts recentes e divide. É a base do alcance estimado.</div>
-        <div><b>Média de engajamento</b> — curtidas + comentários + compartilhamentos por post.</div>
+        <div><b>Média de views</b> — pega as views das <b>últimas publis</b> e faz a média (não do orgânico). É a base do alcance estimado.</div>
+        <div><b>Média de engajamento</b> — curtidas + comentários + compartilhamentos. Muda por tier e <b>sempre veja manualmente na publi</b> — a Sprout não pega publi.</div>
         <div><b>Reels / publicações no escopo</b> — quantos posts daquele tipo o influ faz na campanha.</div>
         <div><b>Telas de Stories</b> — total de telas (não sequências). Ex: 9 telas.</div>
         <div><b>Impacto por tela de stories</b> — deixa vazio = automático (usa benchmark por faixa de seguidores). Só preenche se tiver o dado real.</div>
@@ -228,8 +228,8 @@ td.num{color:var(--ink3) !important}
 
       <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:16px 0 6px">4 · Como saber se está preenchendo certo</h6>
       <div style="display:grid;gap:5px">
-        <div>• <b>Views</b> são uma fração dos seguidores — nunca maiores que o nº de seguidores. Publi rende <b>menos</b> que orgânico.</div>
-        <div>• <b>Taxa de engajamento</b> saudável costuma ficar entre ~1% e ~8% (micro engaja mais que macro). Muito acima, confere.</div>
+        <div>• <b>Views</b>: pega o nº de views das <b>últimas publis</b> e faz a média — nunca maior que os seguidores. Publi é sempre <b>abaixo</b> do orgânico.</div>
+        <div>• <b>Engajamento</b> muda por tier (micro engaja mais que macro) — mas <b>sempre confira manualmente na publi</b>, porque a Sprout não pega publi.</div>
         <div>• Campo em <span style="color:var(--warn)">vermelho</span> = faltando, precisa preencher.</div>
         <div>• Se o <b>impacto</b> vier absurdamente alto, provavelmente os views estão em nível orgânico — ajuste pelas publis.</div>
       </div>
