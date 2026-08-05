@@ -194,6 +194,7 @@ td.num{color:var(--ink3) !important}
     <button onclick="addInflu()">+ Adicionar influ</button>
     <button class="ghost" onclick="document.getElementById('csvfile').click()">📥 Importar do Sprout (CSV)</button>
     <button class="ghost" onclick="exportCSV()">⬇ Baixar planilha (CSV)</button>
+    <button class="ghost" onclick="document.getElementById('glossario').open=true;document.getElementById('glossario').scrollIntoView({behavior:'smooth'})">📖 Glossário</button>
     <button class="ghost" onclick="toggleAll()">⌃ Abrir/fechar tudo</button>
     <input type="file" id="csvfile" accept=".csv" style="display:none" onchange="loadCSV(this)">
   </div>
@@ -202,6 +203,38 @@ td.num{color:var(--ink3) !important}
     <div style="font-weight:700;font-size:14px;color:#F5385D;margin-bottom:4px">⚠️ Números da Sprout = conteúdo ORGÂNICO</div>
     <div style="font-size:13px;color:#FFF7CF;line-height:1.5">As médias de views e engajamento que vêm da Sprout são do conteúdo <b>orgânico</b> do influ. <b>Publi rende diferente</b> (quase sempre menos alcance). Antes de fechar a estimativa, ajuste os campos de <b>views/engajamento com base nas publis</b> de cada perfil — se deixar o número orgânico cru, a estimativa sai <b>bem acima do real</b>.</div>
   </div>
+
+  <details id="glossario" class="config" style="margin-bottom:16px">
+    <summary>📖 Glossário — como usar, o que significa cada campo e como puxar da Sprout</summary>
+    <div style="font-size:13.5px;line-height:1.65;color:var(--ink2);padding:6px 2px 4px">
+      <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:14px 0 6px">1 · Como puxar a planilha da Sprout</h6>
+      <div>Abra no Sprout a lista de creators da campanha (Influencer Marketing → sua lista) e <b>exporte em CSV</b>. Aqui, clique em <b>Importar do Sprout (CSV)</b> e suba o arquivo. O sistema preenche sozinho <b>seguidores</b> e <b>taxa de engajamento</b> de cada rede.<br><span style="color:var(--warn)">⚠️ O Sprout não exporta média de views</span> — esses campos ficam vermelhos pra preencher à mão (pega no perfil, média dos últimos posts). E lembre: os números vêm do <b>orgânico</b> — ajuste pelas <b>publis</b>.</div>
+
+      <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:16px 0 6px">2 · O que significa cada campo</h6>
+      <div style="display:grid;gap:5px">
+        <div><b>Orçamento (R$)</b> — cachê total do influ. É a base do CPM e do CPE.</div>
+        <div><b>Seguidores</b> — total da conta (pode escrever 7.4M ou 7400000).</div>
+        <div><b>Média de views</b> — soma uns 3–5 posts recentes e divide. É a base do alcance estimado.</div>
+        <div><b>Média de engajamento</b> — curtidas + comentários + compartilhamentos por post.</div>
+        <div><b>Reels / publicações no escopo</b> — quantos posts daquele tipo o influ faz na campanha.</div>
+        <div><b>Telas de Stories</b> — total de telas (não sequências). Ex: 9 telas.</div>
+        <div><b>Impacto por tela de stories</b> — deixa vazio = automático (usa benchmark por faixa de seguidores). Só preenche se tiver o dado real.</div>
+        <div><b>Product Placements</b> — menções/aparições extras do produto.</div>
+        <div><b>YouTube</b> — se faltar a média de views, o sistema estima pelos inscritos (benchmark).</div>
+      </div>
+
+      <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:16px 0 6px">3 · Taxas de alcance — já vêm pré-programadas ✨</h6>
+      <div>As taxas de alcance (quanto cada rede alcança, em % dos seguidores, por faixa) já vêm preenchidas com <b>benchmarks de mercado</b> (RivalIQ, Statista, Metricool). <b>Você não precisa mexer.</b> Só ajuste em “Taxas de mercado” se tiver um dado próprio mais preciso daquele influ.</div>
+
+      <h6 style="color:var(--brand);font-size:12px;letter-spacing:.04em;margin:16px 0 6px">4 · Como saber se está preenchendo certo</h6>
+      <div style="display:grid;gap:5px">
+        <div>• <b>Views</b> são uma fração dos seguidores — nunca maiores que o nº de seguidores. Publi rende <b>menos</b> que orgânico.</div>
+        <div>• <b>Taxa de engajamento</b> saudável costuma ficar entre ~1% e ~8% (micro engaja mais que macro). Muito acima, confere.</div>
+        <div>• Campo em <span style="color:var(--warn)">vermelho</span> = faltando, precisa preencher.</div>
+        <div>• Se o <b>impacto</b> vier absurdamente alto, provavelmente os views estão em nível orgânico — ajuste pelas publis.</div>
+      </div>
+    </div>
+  </details>
 
   <div id="importModal" style="display:none;position:fixed;inset:0;background:#16151488;z-index:50;align-items:center;justify-content:center">
     <div style="background:var(--card);border:2px solid var(--black);border-radius:18px;padding:24px;max-width:480px;width:92%;box-shadow:4px 4px 0 var(--black)">
