@@ -228,7 +228,7 @@ async function loadOne(f){
     const tarefa=g(ci.tarefa); if(!tarefa) continue;
     const destRaw=g(ci.dest); const dests=destRaw?destRaw.split(/[;,]/).map(s=>s.trim()).filter(Boolean):[];
     let link=""; const lraw=g(ci.links); if(lraw){ const clean=lraw.replace(/\\\//g,"/"); const mm=clean.match(/https?:\/\/[^"'\\ ]+/); if(mm)link=mm[0]; }
-    out.push({ hub:f.hub, tarefa, status:g(ci.status), prio:g(ci.prio), desc:g(ci.desc), atend:g(ci.atend), atendNome:nameOf(g(ci.atend)), dests, destNomes:dests.map(nameOf), entrada:g(ci.entrada), prazo:g(ci.prazo), concl:low(g(ci.concl))==="true", link, obs:g(ci.obs) });
+    out.push({ hub:f.hub, tarefa, status:g(ci.status), prio:g(ci.prio), desc:g(ci.desc), atend:g(ci.atend), atendNome:nameOf(g(ci.atend)), dests, destNomes:dests.map(nameOf), entrada:g(ci.entrada), prazo:g(ci.prazo), concl:(low(g(ci.concl))==="true"||/(conclu|enviad)/.test(low(g(ci.status)))), link, obs:g(ci.obs) });
   }
   return out;
 }
